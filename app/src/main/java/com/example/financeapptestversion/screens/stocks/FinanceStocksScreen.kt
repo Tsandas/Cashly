@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.DetailsButton
@@ -44,12 +45,13 @@ import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.components.TitleSection
 import com.example.financeapptestversion.model.MStock
 import com.example.financeapptestversion.navigation.AppScreens
+import com.example.financeapptestversion.screens.search.StockSearchViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 //https://site.financialmodelingprep.com/developer/docs/stable
 
 @Composable
-fun FinanceStocksScreen(navController: NavController) {
+fun FinanceStocksScreen(navController: NavController ) {
 
     Scaffold(topBar = {
         FinanceAppBar(title = "Cashly", showProfile = true, navController = navController)

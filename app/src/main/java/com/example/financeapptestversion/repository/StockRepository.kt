@@ -19,4 +19,18 @@ class StockRepository @Inject constructor(private val api: StocksApi) {
         }
         return dataOrException
     }
+
+    suspend fun getStockHistory(symbol: String): DataOrException<List<MStockItem>, Boolean, Exception> {
+        val dataOrException = DataOrException<List<MStockItem>, Boolean, Exception>()
+        try {
+            dataOrException.loading = true
+            dataOrException.data = api.getStocks(symbol/*, API_KEY*/)
+            if (dataOrException.data.toString().isNotEmpty()) dataOrException.loading = false
+        } catch (e: Exception) {
+            Log.e("TAG", "ERROR: ${e.message}")
+            dataOrException.e = e
+        }
+        return dataOrException
+    }
+
 }

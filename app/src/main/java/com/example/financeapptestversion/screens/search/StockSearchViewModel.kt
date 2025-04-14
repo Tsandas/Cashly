@@ -2,8 +2,10 @@ package com.example.financeapptestversion.screens.search
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.financeapptestversion.data.DataOrException
 import com.example.financeapptestversion.model.MStockItem
@@ -97,6 +99,7 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
 
     val stocksInitList: MutableList<MutableState<DataOrException<MStockItem, Boolean, Exception>>> =
         mutableStateListOf()
+    var isLoading: Boolean by mutableStateOf(true)
 
     init {
         loadStocks()
@@ -104,6 +107,7 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
 
     private fun loadStocks() {
         viewModelScope.launch {
+            isLoading = true
             var initStocks = listOf(
                 "AAPL",
                 "TSLA"
@@ -115,8 +119,10 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
                         stocksInitList.add(it)
                     }
                 }
+
             } ?: Log.e("StockViewModel", "initStocks is null!")
         }
+        isLoading = false
     }
 
     fun searchStock(query: String): MutableState<DataOrException<MStockItem, Boolean, Exception>> {

@@ -70,7 +70,7 @@ fun FinanceSearchScreen(navController: NavController, viewModel: StockSearchView
                     hint = "Search"
                 ) {symbol ->
 
-                    viewModel.searchStock(symbol)
+                    viewModel.searchStockII(symbol)
 
                 }
 
@@ -144,19 +144,22 @@ fun StockRow(stock: MStockItem?, x1: NavController) {
                     style = TextStyle(fontSize = 13.sp),
                     overflow = TextOverflow.Clip
                 )
+                Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = stock?.symbol.toString(),
+                    text = stock?.price.toString(),
                     style = TextStyle(fontSize = 13.sp),
                     overflow = TextOverflow.Clip
                 )
+                Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = stock?.price.toString(),
+                    text = "Volume: ${stock?.volume.toString()}",
                     style = TextStyle(fontSize = 13.sp),
                     overflow = TextOverflow.Clip
                 )
             }
 
         }
+        Spacer(modifier = Modifier.height(40.dp))
 
     }
 

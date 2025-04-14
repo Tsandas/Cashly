@@ -2,6 +2,7 @@ package com.example.financeapptestversion.screens.search
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.financeapptestversion.data.DataOrException
@@ -95,7 +96,7 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
 
 
     val stocksInitList: MutableList<MutableState<DataOrException<MStockItem, Boolean, Exception>>> =
-        mutableListOf()
+        mutableStateListOf()
 
     init {
         loadStocks()
@@ -138,5 +139,28 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
         }
         return stock
     }
+
+    fun searchStockII(query: String) {
+        val stock: MutableState<DataOrException<MStockItem, Boolean, Exception>> =
+            mutableStateOf(DataOrException(null, true, Exception("")))
+
+        viewModelScope.launch(/*Dispatchers.IO*/) {
+
+            if (query.isEmpty()) {
+                return@launch
+            }
+
+            stock.value.loading = true
+            stock.value = repository.getStock(query)
+
+            Log.d("TAG", "searchStocks: ${query} ${stock.value.data.toString()}")
+
+            if (stock.value.data.toString().isNotEmpty()) stock.value.loading = false
+
+        }
+        stocksInitList.clear()
+        stocksInitList.add(stock)
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.financeapptestversion.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -9,6 +10,7 @@ import com.example.financeapptestversion.screens.details.FinanceStockDetailsScre
 import com.example.financeapptestversion.screens.home.Home
 import com.example.financeapptestversion.screens.login.FinanceLoginScreen
 import com.example.financeapptestversion.screens.search.FinanceSearchScreen
+import com.example.financeapptestversion.screens.search.StockSearchViewModel
 import com.example.financeapptestversion.screens.stats.FinanceStatsScreen
 import com.example.financeapptestversion.screens.stocks.FinanceStocksScreen
 import com.example.financeapptestversion.screens.update.FinanceUpdateScreen
@@ -38,7 +40,8 @@ fun AppNavigation() {
         }
 
         composable(AppScreens.SearchScreen.name){
-            FinanceSearchScreen(navControler)
+            val viewModel = hiltViewModel<StockSearchViewModel>()
+            FinanceSearchScreen(navControler, viewModel)
         }
 
         composable(AppScreens.StatsScreen.name){

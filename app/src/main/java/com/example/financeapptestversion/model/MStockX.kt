@@ -1,3 +1,3 @@
 package com.example.financeapptestversion.model
 
-class StockModel : ArrayList<MStockItem>()
+//class StockModel : ArrayList<MStockItem>()

@@ -10,11 +10,11 @@ import com.example.financeapptestversion.repository.StockRepository
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class StockSearchViewModel @Inject constructor(private val repository: StockRepository): ViewModel() {
+class StockSearchViewModel @Inject constructor(private val repository: StockRepository) :
+    ViewModel() {
 
     //Symbol Limited to AAPL, TSLA, AMZN, MSFT, NVDA, GOOGL, META, NFLX, JPM, V, BAC, AMD, PYPL, DIS, T, PFE, COST,
     // INTC, KO, TGT, NKE, SPY, BA, BABA, XOM, WMT, GE, CSCO, VZ, JNJ, CVX, PLTR, SQ, SHOP, SBUX, SOFI, HOOD, RBLX,
@@ -93,31 +93,50 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
         "SPYG"
     )
 
-    var stock: MutableState<DataOrException<List<MStockItem>, Boolean, Exception>> =
-        mutableStateOf(DataOrException(null, true, Exception("")))
+
+    val stocksInitList: MutableList<MutableState<DataOrException<MStockItem, Boolean, Exception>>> =
+        mutableListOf()
 
     init {
-        searchStocks("MSFT")
+        loadStocks()
     }
 
-    fun searchStocks(query: String) {
+    private fun loadStocks() {
+        viewModelScope.launch {
+            var initStocks = listOf(
+                "AAPL",
+                "TSLA"
+            )
+            initStocks?.let { list ->
+                for (i in list) {
+                    val stockItem = searchStock(i)
+                    stockItem?.let {
+                        stocksInitList.add(it)
+                    }
+                }
+            } ?: Log.e("StockViewModel", "initStocks is null!")
+        }
+    }
 
-        viewModelScope.launch(Dispatchers.IO) {
+    fun searchStock(query: String): MutableState<DataOrException<MStockItem, Boolean, Exception>> {
+        val stock: MutableState<DataOrException<MStockItem, Boolean, Exception>> =
+            mutableStateOf(DataOrException(null, true, Exception("")))
 
-            if(query.isEmpty()){
+        viewModelScope.launch(/*Dispatchers.IO*/) {
+
+            if (query.isEmpty()) {
                 return@launch
             }
 
-            //stock.value.loading = true
+            stock.value.loading = true
             stock.value = repository.getStock(query)
 
             Log.d("TAG", "searchStocks: ${query} ${stock.value.data.toString()}")
 
             if (stock.value.data.toString().isNotEmpty()) stock.value.loading = false
 
-
         }
-
+        return stock
     }
 
 }

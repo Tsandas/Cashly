@@ -2,6 +2,7 @@ package com.example.financeapptestversion.di
 
 import com.example.financeapptestversion.network.StocksApi
 import com.example.financeapptestversion.repository.StockRepository
+import com.example.financeapptestversion.utils.Constants
 import com.example.financeapptestversion.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -32,7 +33,7 @@ object AppModule {
                         val original = chain.request()
                         val request = original.newBuilder()
                             .url(original.url.newBuilder()
-                                .addQueryParameter("apikey", "YOUR_API_KEY")
+                                .addQueryParameter("apikey", Constants.API_KEY)
                                 .build())
                             .build()
                         chain.proceed(request)

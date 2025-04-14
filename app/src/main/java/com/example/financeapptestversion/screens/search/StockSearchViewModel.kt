@@ -93,11 +93,11 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
         "SPYG"
     )
 
-    var stock: MutableState<DataOrException<MStockItem, Boolean, Exception>> =
+    var stock: MutableState<DataOrException<List<MStockItem>, Boolean, Exception>> =
         mutableStateOf(DataOrException(null, true, Exception("")))
 
     init {
-        searchStocks("LMT")
+        searchStocks("MSFT")
     }
 
     fun searchStocks(query: String) {
@@ -111,7 +111,7 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
             //stock.value.loading = true
             stock.value = repository.getStock(query)
 
-            Log.d("TAG", "searchStocks: ${stock.value.data.toString()}")
+            Log.d("TAG", "searchStocks: ${query} ${stock.value.data.toString()}")
 
             if (stock.value.data.toString().isNotEmpty()) stock.value.loading = false
 

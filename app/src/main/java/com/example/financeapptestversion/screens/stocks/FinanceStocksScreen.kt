@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,28 +31,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.financeapptestversion.components.DetailsButton
 import com.example.financeapptestversion.components.FABContent
 import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.components.TitleSection
-import com.example.financeapptestversion.model.MStock
+import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
-import com.example.financeapptestversion.screens.search.StockSearchViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 //https://site.financialmodelingprep.com/developer/docs/stable
 
 @Composable
-fun FinanceStocksScreen(navController: NavController ) {
+fun FinanceStocksScreen(
+    navController: NavController,
+    viewModel: StockScreenViewModel = hiltViewModel()
+) {
 
     Scaffold(topBar = {
         FinanceAppBar(title = "Cashly", showProfile = true, navController = navController)
@@ -66,8 +66,7 @@ fun FinanceStocksScreen(navController: NavController ) {
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            //main stocks content
-            StockScreenMainContent(navController)
+            StockScreenMainContent(navController, viewModel)
         }
 
     }
@@ -76,33 +75,26 @@ fun FinanceStocksScreen(navController: NavController ) {
 
 
 @Composable
-fun StockScreenMainContent(navController: NavController) {
+fun StockScreenMainContent(navController: NavController, viewModel: StockScreenViewModel) {
 
-    val listOfStocks = listOf<MStock>(
-        MStock(
-            id = "124",
-            stockSymbol = "MSFT",
-            stockName = "Apple Inc",
-            stockPrice = 123.45
-        ),
-        MStock(
-            id = "123",
-            stockSymbol = "AAPL",
-            stockName = "Apple Inc",
-            stockPrice = 123.45),
-        MStock(
-            id = "12112",
-            stockSymbol = "BOSS",
-            stockName = "Apple Inc",
-            stockPrice = 1212.45),
-        MStock(
-            id = "123",
-            stockSymbol = "NFLX",
-            stockName = "Apple Inc",
-            stockPrice = 123.45
-        )
+    var listOfStocks = emptyList<MStockItem>()
+    val currentUser = FirebaseAuth.getInstance().currentUser
 
-    )
+    if (!viewModel.data.value.data.isNullOrEmpty()) {
+        listOfStocks = viewModel.data.value.data!!.toList().filter { mStock ->
+            mStock.userId == currentUser?.uid.toString()
+        }
+        Log.d("TAG", "StockScreenMainContent: ${listOfStocks.toString()}")
+    }
+
+//    val listOfStocks = listOf<MStockItem>(
+//        MStockItem(
+//            symbol = "AAPL",
+//            price = 124.1,
+//            volume = 34,
+//            date = "124"
+//        )
+//    )
 
     val email = FirebaseAuth.getInstance().currentUser?.email
     val currentUserName = if (!email.isNullOrEmpty()) {
@@ -149,38 +141,49 @@ fun StockScreenMainContent(navController: NavController) {
         Spacer(Modifier.padding(top = 20.dp))
 
         //ListCard()
-        MyStocksArea(
-            stocks = listOf(
-                MStock(
-                    id = "123",
-                    stockSymbol = "AAPL",
-                    stockName = "Apple Inc"
-                )
-            ), navController
-        )
+//        MyStocksArea(
+//            stocks = listOfStocks, navController
+//        )
+        StockListArea(listOfStocks, navController)
+
         Spacer(Modifier.height(40.dp))
         TitleSection(label = "Hot Stocks")
         Spacer(Modifier.height(65.dp))
 
-        StockListArea(listOfStocks = listOfStocks , navController = navController)
+
+        val tempHotStocks = listOf<MStockItem>(
+            MStockItem(
+                symbol = "AAPL",
+                price = 124.1,
+                volume = 34,
+                date = "124"
+            ),
+            MStockItem(
+                symbol = "TSLA",
+                price = 124.1,
+                volume = 34,
+                date = "124"
+            )
+        )
+        StockListArea(tempHotStocks, navController = navController)
 
     }
 
 }
 
 @Composable
-fun StockListArea(listOfStocks: List<MStock>, navController: NavController) {
+fun StockListArea(listOfStocks: List<MStockItem> = emptyList(), navController: NavController) {
 
-    HorizontalScrollableComponent(listOfStocks){
+    HorizontalScrollableComponent(listOfStocks) {
         //todo on card clicked go to details
-        Log.d("tag","StockListArea: $it" )
+        Log.d("tag", "StockListArea: $it")
     }
 
 
 }
 
 @Composable
-fun HorizontalScrollableComponent(listOfStocks: List<MStock>, onCardPressed: (String) -> Unit) {
+fun HorizontalScrollableComponent(listOfStocks: List<MStockItem>, onCardPressed: (String) -> Unit) {
 
     val scrollState = rememberScrollState()
     LazyRow(
@@ -203,16 +206,15 @@ fun HorizontalScrollableComponent(listOfStocks: List<MStock>, onCardPressed: (St
 
 
 @Composable
-fun MyStocksArea(stocks: List<MStock>, navController: NavController) {
-    ListCard()
+fun MyStocksArea(stocks: List<MStockItem>, navController: NavController) {
+
+    //ListCard()
 
 }
 
 @Composable
 fun ListCard(
-    stock: MStock = MStock(
-        id = "123", stockSymbol = "AAPL", stockName = "Apple Inc", stockPrice = 123.45
-    ),
+    stock: MStockItem,
     onPressDetails: (String) -> Unit = {}
 ) {
 
@@ -244,7 +246,7 @@ fun ListCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(model = "https://images.financialmodelingprep.com/symbol/AAPL.png"),
+                    painter = rememberAsyncImagePainter(model = "https://images.financialmodelingprep.com/symbol/${stock.symbol}.png"),
                     contentDescription = "Stock Image",
                     Modifier
                         .height(150.dp)
@@ -257,24 +259,29 @@ fun ListCard(
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    text = stock.stockName.toString(),
+                    text = stock.symbol.toString(),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(4.dp),
                     maxLines = 1
                 )
 
                 Text(
-                    text = "$123.5",
+                    text = "$${stock.price}",
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(4.dp),
                     maxLines = 1
                 )
             }
-            Text(
-                text = "Profit/Loss +12.5%",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(4.dp)
-            )
+
+            stock.priceBought?.let { buyPrice ->
+                val profit = (buyPrice - stock.price) / buyPrice * 100
+                Text(
+                    text = "Profit/Loss %.3f%%".format(profit),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+
 //            Row(
 //                horizontalArrangement = Arrangement.End,
 //                verticalAlignment = Alignment.Bottom,

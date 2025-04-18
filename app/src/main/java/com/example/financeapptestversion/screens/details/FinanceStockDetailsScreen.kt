@@ -128,10 +128,10 @@ fun FinanceStockDetailsScreen(
                         Spacer(modifier = Modifier.height(40.dp))
                         if (buttons) {
                             var numberText by remember { mutableStateOf("") }
-                            var price by remember { mutableStateOf<Double?>(null) }
+                            //var price by remember { mutableStateOf<Double?>(null) }
 
                             var quantityText by remember { mutableStateOf("") }
-                            var quantity by remember { mutableStateOf<Int?>(null) }
+                            //var quantity by remember { mutableStateOf<Int?>(null) }
 
                             Column(
                                 modifier = Modifier
@@ -219,19 +219,19 @@ fun FinanceStockDetailsScreen(
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
-                                price?.let {
-                                    Text(
-                                        text = "Saved price: $it",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-
-                                quantity?.let {
-                                    Text(
-                                        text = "Saved quantity: $it",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
+//                                price?.let {
+//                                    Text(
+//                                        text = "Saved price: $it",
+//                                        style = MaterialTheme.typography.bodyMedium
+//                                    )
+//                                }
+//
+//                                quantity?.let {
+//                                    Text(
+//                                        text = "Saved quantity: $it",
+//                                        style = MaterialTheme.typography.bodyMedium
+//                                    )
+//                                }
 
 
                             }
@@ -269,7 +269,7 @@ private fun saveToFirebase(savedStock: MStockItem, navController: NavController)
                 dbCollection.document(docId)
                     .update("id", docId)
                     .addOnCompleteListener { task ->
-                        if(task.isSuccessful){
+                        if (task.isSuccessful) {
                             navController.popBackStack()
                         }
                     }

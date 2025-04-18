@@ -15,6 +15,7 @@ import com.example.financeapptestversion.screens.search.FinanceSearchScreen
 import com.example.financeapptestversion.screens.search.StockSearchViewModel
 import com.example.financeapptestversion.screens.stats.FinanceStatsScreen
 import com.example.financeapptestversion.screens.stocks.FinanceStocksScreen
+import com.example.financeapptestversion.screens.stocks.StockScreenViewModel
 import com.example.financeapptestversion.screens.update.FinanceUpdateScreen
 
 @Composable
@@ -30,15 +31,17 @@ fun AppNavigation() {
         }
 
         composable(AppScreens.StocksScreen.name) {
-            FinanceStocksScreen(navControler)
+            val viewModel = hiltViewModel<StockScreenViewModel>()
+            FinanceStocksScreen(navControler, viewModel = viewModel)
         }
 
         val detailName = AppScreens.DetailScreen.name
         composable(
             "$detailName/{stockSymbol}", arguments = listOf(
-            navArgument("stockSymbol") {
-                type = NavType.StringType
-            })) { backStackEntry ->
+                navArgument("stockSymbol") {
+                    type = NavType.StringType
+                })
+        ) { backStackEntry ->
             backStackEntry.arguments?.getString("stockSymbol").let { stockSymbol ->
                 FinanceStockDetailsScreen(navControler, stockSymbol.toString())
             }

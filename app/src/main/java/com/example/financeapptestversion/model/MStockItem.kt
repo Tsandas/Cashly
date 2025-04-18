@@ -5,10 +5,10 @@ import com.google.firebase.firestore.PropertyName
 
 data class MStockItem(
     @Exclude var id: String? = null,
-    val date: String,
-    val price: Double,
-    val symbol: String,
-    val volume: Int,
+    val date: String = "",
+    val price: Double = 0.0,
+    val symbol: String = "",
+    val volume: Int = 0,
     @get:PropertyName("user_id")
     @set:PropertyName("user_id")
     var userId: String? = null,

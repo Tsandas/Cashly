@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -122,12 +123,14 @@ fun StockList(navController: NavController, viewModel: StockSearchViewModel) {
 }
 
 @Composable
-fun StockRow(stock: MStockItem?, x1: NavController) {
+fun StockRow(stock: MStockItem?, navController: NavController) {
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{}
+            .clickable {
+                navController.navigate(AppScreens.DetailScreen.name + "/${stock?.symbol}")
+            }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp),
@@ -151,28 +154,32 @@ fun StockRow(stock: MStockItem?, x1: NavController) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text(
-                    text = stock?.symbol.orEmpty(),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                if (stock == null) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(
+                        text = stock?.symbol.orEmpty(),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
-                Text(
-                    text = "$${stock?.price}",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        color = Color(0xFF2E7D32),
-                        fontWeight = FontWeight.SemiBold
+                    Text(
+                        text = "$${stock?.price}",
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = Color(0xFF2E7D32),
+                            fontWeight = FontWeight.SemiBold
+                        )
                     )
-                )
-                Text(
-                    text = "Volume: ${stock?.volume}",
-                    style = TextStyle(
-                        fontSize = 13.sp,
-                        color = Color.Gray
+                    Text(
+                        text = "Volume: ${stock?.volume}",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            color = Color.Gray
+                        )
                     )
-                )
+                }
             }
         }
     }

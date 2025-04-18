@@ -60,8 +60,15 @@ fun AppNavigation() {
             FinanceStatsScreen(navControler)
         }
 
-        composable(AppScreens.UpdateScreen.name) {
-            FinanceUpdateScreen(navControler)
+        val updateName = AppScreens.UpdateScreen.name
+        composable(
+            "$updateName/{stockItemId}", arguments = listOf(navArgument("stockItemId") {
+                type = NavType.StringType
+            })
+        ) { navBackStackEntry ->
+            navBackStackEntry.arguments?.getString("stockItemId").let {
+                FinanceUpdateScreen(navControler, stockItemId = it.toString())
+            }
         }
 
     }

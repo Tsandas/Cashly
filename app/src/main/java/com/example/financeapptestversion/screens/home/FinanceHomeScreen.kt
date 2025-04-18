@@ -6,5 +6,5 @@ import androidx.navigation.NavController
 
 @Composable
 fun Home(navController: NavController){
-    Text(text = "Hello how are lil pussy ass")
+    Text(text = "This is the home screen")
 }

@@ -57,7 +57,6 @@ fun FinanceSearchScreen(
     navController: NavController,
     viewModel: StockSearchViewModel = hiltViewModel()
 ) {
-
     Scaffold(
         topBar = {
             FinanceAppBar(
@@ -79,52 +78,34 @@ fun FinanceSearchScreen(
                     viewModel = viewModel,
                     hint = "Search"
                 ) { symbol ->
-
                     viewModel.searchStockII(symbol)
-
                 }
-
                 Spacer(modifier = Modifier.height(13.dp))
-
                 StockList(navController, viewModel)
-
-
             }
-
         }
-
     }
-
-
 }
 
 @Composable
 fun StockList(navController: NavController, viewModel: StockSearchViewModel) {
-
     if (viewModel.isLoading) {
         LinearProgressIndicator()
     } else {
         val listOfStocks = viewModel.stocksInitList
-
-        Log.d("BOO", "$listOfStocks")
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp)
         ) {
-
             items(items = listOfStocks) { stock ->
                 StockRow(stock = stock.value.data, navController)
             }
-
         }
     }
-
 }
 
 @Composable
 fun StockRow(stock: MStockItem?, navController: NavController) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -184,7 +165,6 @@ fun StockRow(stock: MStockItem?, navController: NavController) {
         }
     }
     Spacer(modifier = Modifier.height(24.dp))
-
 }
 
 @Composable
@@ -204,17 +184,6 @@ fun SearchForm(
             searchQuerryState.value.trim().isNotEmpty()
         }
 
-//        InputField(
-//            valueState = searchQuerryState,
-//            labelId = "Search",
-//            enabled = true,
-//            onAction = KeyboardActions {
-//                if (!valid) return@KeyboardActions
-//                onSearch(searchQuerryState.value.trim())
-//                searchQuerryState.value = ""
-//                keyboardController?.hide()
-//            }
-//        )
         OutlinedTextField(
             value = searchQuerryState.value,
             onValueChange = { searchQuerryState.value = it },
@@ -233,8 +202,5 @@ fun SearchForm(
                 }
             )
         )
-
-
     }
-
 }

@@ -96,7 +96,6 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
         "SPYG"
     )
 
-
     val stocksInitList: MutableList<MutableState<DataOrException<MStockItem, Boolean, Exception>>> =
         mutableStateListOf()
     var isLoading: Boolean by mutableStateOf(true)
@@ -110,7 +109,8 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
             isLoading = true
             var initStocks = listOf(
                 "AAPL",
-                "TSLA"
+                "TSLA",
+                "NFLX"
             )
             initStocks?.let { list ->
                 for (i in list) {

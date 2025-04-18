@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -84,17 +83,7 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
         listOfStocks = viewModel.data.value.data!!.toList().filter { mStock ->
             mStock.userId == currentUser?.uid.toString()
         }
-        Log.d("TAG", "StockScreenMainContent: ${listOfStocks.toString()}")
     }
-
-//    val listOfStocks = listOf<MStockItem>(
-//        MStockItem(
-//            symbol = "AAPL",
-//            price = 124.1,
-//            volume = 34,
-//            date = "124"
-//        )
-//    )
 
     val email = FirebaseAuth.getInstance().currentUser?.email
     val currentUserName = if (!email.isNullOrEmpty()) {
@@ -140,16 +129,13 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
         }
         Spacer(Modifier.padding(top = 20.dp))
 
-        //ListCard()
-//        MyStocksArea(
-//            stocks = listOfStocks, navController
-//        )
-        StockListArea(listOfStocks, navController)
+        //MyStocksArea(stocks = listOfStocks, navController )
 
+        StockListArea(listOfStocks, navController)
         Spacer(Modifier.height(40.dp))
+
         TitleSection(label = "Hot Stocks")
         Spacer(Modifier.height(65.dp))
-
 
         val tempHotStocks = listOf<MStockItem>(
             MStockItem(
@@ -173,13 +159,9 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
 
 @Composable
 fun StockListArea(listOfStocks: List<MStockItem> = emptyList(), navController: NavController) {
-
     HorizontalScrollableComponent(listOfStocks) {
-        //todo on card clicked go to details
-        Log.d("tag", "StockListArea: $it")
+        navController.navigate(AppScreens.UpdateScreen.name + "/$it")
     }
-
-
 }
 
 @Composable
@@ -207,9 +189,7 @@ fun HorizontalScrollableComponent(listOfStocks: List<MStockItem>, onCardPressed:
 
 @Composable
 fun MyStocksArea(stocks: List<MStockItem>, navController: NavController) {
-
     //ListCard()
-
 }
 
 @Composable
@@ -281,14 +261,6 @@ fun ListCard(
                     modifier = Modifier.padding(4.dp)
                 )
             }
-
-//            Row(
-//                horizontalArrangement = Arrangement.End,
-//                verticalAlignment = Alignment.Bottom,
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                DetailsButton(label = "More", radius = 70)
-//            }
 
         }
 

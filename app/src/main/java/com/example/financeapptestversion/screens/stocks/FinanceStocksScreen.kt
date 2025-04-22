@@ -1,6 +1,5 @@
 package com.example.financeapptestversion.screens.stocks
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +41,7 @@ import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.components.TitleSection
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
+import com.example.financeapptestversion.repository.StockRepository
 import com.google.firebase.auth.FirebaseAuth
 
 //https://site.financialmodelingprep.com/developer/docs/stable
@@ -65,6 +65,7 @@ fun FinanceStocksScreen(
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            //todo updateStockPrices()
             StockScreenMainContent(navController, viewModel)
         }
 
@@ -176,7 +177,7 @@ fun HorizontalScrollableComponent(listOfStocks: List<MStockItem>, onCardPressed:
                 val stock = listOfStocks[index]
 
                 ListCard(stock = stock) {
-                    onCardPressed(it)
+                    onCardPressed(stock.id.toString())
                 }
 
             }

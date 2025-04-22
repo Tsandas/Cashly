@@ -1,5 +1,7 @@
 package com.example.financeapptestversion.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -260,7 +262,7 @@ fun FABContent(onTap: () -> Unit) {
 
 
 @Composable
-fun DetailsButton(
+fun RoundedButton(
     label: String = "More", radius: Int = 29, onPressDetails: () -> Unit = {}
 ) {
     Surface(
@@ -282,4 +284,9 @@ fun DetailsButton(
         }
     }
 
+}
+
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }

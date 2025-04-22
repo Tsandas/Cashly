@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.financeapptestversion.components.DetailsButton
+import com.example.financeapptestversion.components.RoundedButton
 import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.model.MStockItem
 import com.google.firebase.auth.FirebaseAuth
@@ -192,7 +192,7 @@ fun FinanceStockDetailsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
-                                    DetailsButton(label = "Save") {
+                                    RoundedButton(label = "Save") {
 
                                         if (numberText.isEmpty() || quantityText.isEmpty()) {
 
@@ -210,7 +210,7 @@ fun FinanceStockDetailsScreen(
                                         }
 
                                     }
-                                    DetailsButton(label = "Cancel") {
+                                    RoundedButton(label = "Cancel") {
                                         navController.popBackStack()
                                     }
                                 }

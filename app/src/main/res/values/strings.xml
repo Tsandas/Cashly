@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">FinanceAppTestVersion</string>
+    <string name="delete_message">Are you sure you want to remove this stock?</string>
+    <string name="action_delete">This action is not reversible</string>
     <string name="create_acc">Please enter a valid email and password that is at least 6 characters</string>
 </resources>

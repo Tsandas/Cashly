@@ -1,14 +1,18 @@
 package com.example.financeapptestversion.repository
 
+import android.util.Log
 import com.example.financeapptestversion.data.DataOrException
 import com.example.financeapptestversion.model.MStockItem
+import com.example.financeapptestversion.network.StocksApi
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FireRepository @Inject constructor(
-    private val queryStocks: Query
+    private val queryStocks: Query,
+    private val api: StocksApi
 ) {
 
     suspend fun getAllStocksFromDatabase(): DataOrException<List<MStockItem>, Boolean, Exception> {
@@ -28,5 +32,24 @@ class FireRepository @Inject constructor(
 
         return dataOrException
     }
+
+    suspend fun getStock(symbol: String): DataOrException<MStockItem, Boolean, Exception> {
+        val dataOrException = DataOrException<MStockItem, Boolean, Exception>()
+        try {
+            dataOrException.loading = true
+            dataOrException.data = api.getStocks(symbol/*, API_KEY*/).get(0)
+            if (dataOrException.data.toString().isNotEmpty()) dataOrException.loading = false
+        } catch (e: Exception) {
+            Log.e("TAG", "ERROR: ${e.message}")
+            dataOrException.e = e
+        }
+        return dataOrException
+    }
+
+    suspend fun updateStockPrice(stockId: String, newPrice: Double) {
+        val stockRef = FirebaseFirestore.getInstance().collection("stocks").document(stockId)
+        stockRef.update("price", newPrice).await()
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.financeapptestversion.screens.stocks
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,15 +43,13 @@ import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.components.TitleSection
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
-import com.example.financeapptestversion.repository.StockRepository
 import com.google.firebase.auth.FirebaseAuth
 
 //https://site.financialmodelingprep.com/developer/docs/stable
 
 @Composable
 fun FinanceStocksScreen(
-    navController: NavController,
-    viewModel: StockScreenViewModel = hiltViewModel()
+    navController: NavController, viewModel: StockScreenViewModel = hiltViewModel()
 ) {
 
     Scaffold(topBar = {
@@ -65,14 +65,12 @@ fun FinanceStocksScreen(
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            //todo updateStockPrices()
             StockScreenMainContent(navController, viewModel)
         }
 
     }
 
 }
-
 
 @Composable
 fun StockScreenMainContent(navController: NavController, viewModel: StockScreenViewModel) {
@@ -132,41 +130,54 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
 
         //MyStocksArea(stocks = listOfStocks, navController )
 
-        StockListArea(listOfStocks, navController)
-        Spacer(Modifier.height(40.dp))
+        if (viewModel.stocksState.value.loading == true) {
+            CircularProgressIndicator()
+        } else {
+            StockListArea(listOfStocks, navController)
+            Spacer(Modifier.height(40.dp))
+        }
 
         TitleSection(label = "Hot Stocks")
         Spacer(Modifier.height(65.dp))
 
-        val tempHotStocks = listOf<MStockItem>(
-            MStockItem(
-                symbol = "AAPL",
-                price = 124.1,
-                volume = 34,
-                date = "124"
-            ),
-            MStockItem(
-                symbol = "TSLA",
-                price = 124.1,
-                volume = 34,
-                date = "124"
+        if (viewModel.stocksState.value.loading == true) {
+            CircularProgressIndicator()
+        } else {
+            val tempHotStocks = listOf<MStockItem>(
+                MStockItem(
+                    symbol = "AAPL",
+                    price = 124.1,
+                    volume = 34,
+                    date = "124"
+                ),
+                MStockItem(
+                    symbol = "TSLA",
+                    price = 124.1,
+                    volume = 34,
+                    date = "124"
+                )
             )
-        )
-        StockListArea(tempHotStocks, navController = navController)
+            Log.d("StockScreenViewModel", "StockScreenMainContent(): ${tempHotStocks.toString()}")
+            StockListArea(tempHotStocks, navController = navController)
+        }
 
     }
 
 }
 
 @Composable
-fun StockListArea(listOfStocks: List<MStockItem> = emptyList(), navController: NavController) {
+fun StockListArea(
+    listOfStocks: List<MStockItem> = emptyList(), navController: NavController
+) {
     HorizontalScrollableComponent(listOfStocks) {
         navController.navigate(AppScreens.UpdateScreen.name + "/$it")
     }
 }
 
 @Composable
-fun HorizontalScrollableComponent(listOfStocks: List<MStockItem>, onCardPressed: (String) -> Unit) {
+fun HorizontalScrollableComponent(
+    listOfStocks: List<MStockItem>, onCardPressed: (String) -> Unit
+) {
 
     val scrollState = rememberScrollState()
     LazyRow(
@@ -180,8 +191,7 @@ fun HorizontalScrollableComponent(listOfStocks: List<MStockItem>, onCardPressed:
                     onCardPressed(stock.id.toString())
                 }
 
-            }
-        )
+            })
     }
 
 
@@ -195,8 +205,7 @@ fun MyStocksArea(stocks: List<MStockItem>, navController: NavController) {
 
 @Composable
 fun ListCard(
-    stock: MStockItem,
-    onPressDetails: (String) -> Unit = {}
+    stock: MStockItem, onPressDetails: (String) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -223,8 +232,7 @@ fun ListCard(
             modifier = Modifier.width(screenWidth.dp - (spacing * 2))
         ) {
             Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(model = "https://images.financialmodelingprep.com/symbol/${stock.symbol}.png"),

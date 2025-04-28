@@ -13,7 +13,6 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.annotation.Signed
 import javax.inject.Singleton
 
 @Module
@@ -22,8 +21,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideFireStockRepository() =
-        FireRepository(queryStocks = FirebaseFirestore.getInstance().collection("stocks"))
+    fun provideFireStockRepository(api: StocksApi): FireRepository {
+        return FireRepository(
+            queryStocks = FirebaseFirestore.getInstance().collection("stocks"),
+             api = provideStockApi()
+        )
+    }
 
     @Singleton
     @Provides

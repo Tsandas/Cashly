@@ -57,7 +57,8 @@ fun AppNavigation() {
         }
 
         composable(AppScreens.StatsScreen.name) {
-            FinanceStatsScreen(navControler)
+            val stocksViewModel = hiltViewModel<StockScreenViewModel>()
+            FinanceStatsScreen(navControler, viewModel = stocksViewModel)
         }
 
         val updateName = AppScreens.UpdateScreen.name

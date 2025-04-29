@@ -1,5 +1,10 @@
 package com.example.financeapptestversion.di
 
+import android.content.Context
+import androidx.room.Room
+import com.example.financeapptestversion.data.AccountCashBalanceDao
+import com.example.financeapptestversion.data.AppDatabase
+import com.example.financeapptestversion.data.TransactionDao
 import com.example.financeapptestversion.network.StocksApi
 import com.example.financeapptestversion.repository.FireRepository
 import com.example.financeapptestversion.repository.StockRepository
@@ -9,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -59,5 +65,22 @@ object AppModule {
             .create(StocksApi::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "finance_app_db"
+        ).fallbackToDestructiveMigration().build()
+
+
+    @Singleton
+    @Provides
+    fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao = appDatabase.transactionDao()
+
+    @Singleton
+    @Provides
+    fun provideAccountCashBalanceDao(appDatabase: AppDatabase): AccountCashBalanceDao = appDatabase.accountCashBalanceDao()
 
 }

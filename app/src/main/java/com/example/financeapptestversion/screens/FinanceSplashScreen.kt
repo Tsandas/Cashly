@@ -48,7 +48,7 @@ fun FinanceSplashScreen(navController: NavController) {
         if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
             navController.navigate(AppScreens.LoginScreen.name)
         } else {
-            navController.navigate(AppScreens.StocksScreen.name) //make it home later
+            navController.navigate(AppScreens.HomeScreen.name) //make it home later
         }
 
     }

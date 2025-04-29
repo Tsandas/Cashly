@@ -19,10 +19,10 @@ interface TransactionDao {
     suspend fun getTransactionById(id: String): Transaction
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(transaction: Transaction)
+    suspend fun addTransaction(transaction: Transaction)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(transaction: Transaction)
+    suspend fun updateTransaction(transaction: Transaction)
 
     @Query("DELETE FROM transaction_table")
     suspend fun deleteAll()

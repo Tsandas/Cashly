@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "account_cash_balance")
 data class AccountCashBalance(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: Int = 0,
 
     @ColumnInfo(name = "cash_balance")
     val balance: Double = 0.0,

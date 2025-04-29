@@ -7,7 +7,7 @@ class TransactionData {
 
     fun loadTransactions(): List<Transaction> {
         return listOf(
-            Transaction(title = "Groceries", amount = 25.0),
+            Transaction(title = "THIS IS SAMPLE DATA", amount = 25.0),
             Transaction(title = "Gas", amount = -10.0),
             Transaction(title = "Rent", amount = -200.0),
             Transaction(title = "Utilities", amount = -50.0),

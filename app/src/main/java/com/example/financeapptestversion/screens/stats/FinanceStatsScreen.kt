@@ -46,7 +46,8 @@ fun FinanceStatsScreen(
                 navController = navController,
                 icon = Icons.Default.ArrowBack
             ){
-                navController.navigate(AppScreens.StocksScreen.name)
+                //navController.navigate(AppScreens.StocksScreen.name)
+                navController.popBackStack()
             }
         }) {
         Surface(

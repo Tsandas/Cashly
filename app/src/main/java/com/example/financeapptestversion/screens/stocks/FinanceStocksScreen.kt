@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,7 +55,9 @@ fun FinanceStocksScreen(
 ) {
 
     Scaffold(topBar = {
-        FinanceAppBar(title = "Cashly", showProfile = true, navController = navController)
+        FinanceAppBar(title = "Cashly", showProfile = true, navController = navController, icon = Icons.Default.ArrowBack){
+            navController.navigate(AppScreens.HomeScreen.name)
+        }
     }, floatingActionButton = {
         FABContent {
             navController.navigate(AppScreens.SearchScreen.name)
@@ -157,7 +161,6 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
                     date = "124"
                 )
             )
-            Log.d("StockScreenViewModel", "StockScreenMainContent(): ${tempHotStocks.toString()}")
             StockListArea(tempHotStocks, navController = navController)
         }
 

@@ -23,6 +23,9 @@ data class Transaction(
     val entryDate: Date = Date.from(Instant.now()),
 
     @ColumnInfo(name = "transaction_amount")
-    val amount: Double
+    val amount: Double,
+
+    @ColumnInfo(name = "is_expense")
+    val isExpense: Boolean = true
 
 )

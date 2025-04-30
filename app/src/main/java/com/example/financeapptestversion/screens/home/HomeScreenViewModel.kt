@@ -56,8 +56,13 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
         _accountCashBalance.value = balance
     }
 
-    fun addTransaction(transaction: Transaction) =
+    fun addTransaction(transaction: Transaction) {
+        var amount =  if (transaction.isExpense) -transaction.amount else transaction.amount
+        var newBalance = _accountCashBalance.value!!.balance + amount
         viewModelScope.launch { repository.addTransaction(transaction) }
+        _accountCashBalance.value = AccountCashBalance(id = 0, balance = newBalance)
+        viewModelScope.launch { repository.updateCashBalance(newBalance) }
+    }
 
     fun updateTransaction(transaction: Transaction) =
         viewModelScope.launch { repository.updateTransaction(transaction) }
@@ -69,7 +74,6 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
         Log.d("Cash", "updateCashBalance: $balance")
         _accountCashBalance.value = AccountCashBalance(id = 0, balance = balance)
         viewModelScope.launch { repository.updateCashBalance(balance) }
-
     }
 
     fun getCashBalance() = viewModelScope.launch { repository.getAccountBalance() ?: 1100.02 }

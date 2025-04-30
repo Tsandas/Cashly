@@ -2,6 +2,7 @@ package com.example.financeapptestversion.screens.home
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -42,23 +44,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltViewModel()) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     var expanded by remember { mutableStateOf(false) }
 
     val openDialog = remember {
+        mutableStateOf(false)
+    }
+
+    val openAddDialog = remember {
         mutableStateOf(false)
     }
 
@@ -74,9 +85,10 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
     }, floatingActionButton = {
         FloatingActionButton(
             onClick = {
-                viewModel.addTransaction(
-                    Transaction(amount = 2315.2, title = "TestingDb")
-                )
+                openAddDialog.value = true
+//                viewModel.addTransaction(
+//                    Transaction(amount = 2315.2, title = "TestingDb")
+//                )
             }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
         ) {
             Icon(Icons.Default.Add, contentDescription = "Add Transaction")
@@ -106,8 +118,125 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                 }
                 val inputText = remember { mutableStateOf(newBalance.value.toString()) }
 
+
+                if (openAddDialog.value) {
+
+                    var transactionAmount = remember {
+                        mutableStateOf(0.0)
+                    }
+
+                    var transactionAmountText = remember {
+                        mutableStateOf(transactionAmount.value.toString())
+                    }
+
+                    var transactionName = remember {
+                        mutableStateOf("")
+                    }
+
+                    var transactionIsExpense = remember {
+                        mutableStateOf(false)
+                    }
+
+                    var context = LocalContext.current
+
+                    ShowDialog(title = "Add transaction", openDialog = openAddDialog, content = {
+                        Column {
+                            Text(text = "Add a new transaction")
+                            OutlinedTextField(
+                                value = transactionName.value,
+                                onValueChange = { input ->
+                                    transactionName.value = input
+                                },
+                                label = { Text("Enter the transactions name") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                singleLine = true,
+                                enabled = true,
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        keyboardController?.hide()
+                                    })
+                            )
+
+                            Row(
+                                Modifier
+                                    .padding(16.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(Color.LightGray)
+                            ) {
+                                val selectedColor = Color.Blue
+                                val unselectedColor = Color.Gray
+
+                                Text(
+                                    "Income",
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { transactionIsExpense.value = false }
+                                        .background(if (!transactionIsExpense.value) Color.Green else unselectedColor)
+                                        .padding(8.dp),
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    "Expense",
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { transactionIsExpense.value = true }
+                                        .background(if (transactionIsExpense.value) Color.Red else unselectedColor)
+                                        .padding(8.dp),
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+
+                            Text(text = "Add amount")
+                            OutlinedTextField(
+                                value = transactionAmountText.value.toString(),
+                                onValueChange = { input ->
+                                    if (input.isEmpty() || input.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                        transactionAmountText.value = input
+                                        transactionAmount.value = input.toDoubleOrNull() ?: 0.0
+                                    }
+                                },
+                                label = { Text("Enter amount") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                singleLine = true,
+                                enabled = true,
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        keyboardController?.hide()
+                                    })
+                            )
+                        }
+                    }, onYesPressed = {
+
+                        if (transactionName.value.isEmpty() || transactionAmount.value.toString()
+                                .isEmpty()
+                        ) {
+                            Toast.makeText(
+                                context,
+                                "Please enter the transaction's name and amount.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            viewModel.addTransaction(
+                                Transaction(
+                                    title = transactionName.value,
+                                    amount = transactionAmount.value,
+                                    isExpense = transactionIsExpense.value
+                                )
+                            )
+                            openAddDialog.value = false
+                        }
+                    })
+
+
+                }
+
                 if (openDialog.value) {
-                    val keyboardController = LocalSoftwareKeyboardController.current
                     ShowDialog(title = "Update Balance", openDialog = openDialog, content = {
                         Text(text = "Enter new balance:")
                         OutlinedTextField(
@@ -173,13 +302,13 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "Spending Overview",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
+//                Text(
+//                    text = "Spending Overview",
+//                    style = MaterialTheme.typography.titleMedium,
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//
+//                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Recent Transactions",
@@ -213,9 +342,13 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
             expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(text = { Text("Profile") }, onClick = {
                 expanded = false
-                navController.navigate(AppScreens.StocksScreen.name)
+                navController.navigate(AppScreens.StatsScreen.name)
             })
             DropdownMenuItem(text = { Text("Settings") }, onClick = { expanded = false })
+            DropdownMenuItem(text = { Text("Stocks") }, onClick = {
+                expanded = false
+                navController.navigate(AppScreens.StocksScreen.name)
+            })
             DropdownMenuItem(text = { Text("Logout") }, onClick = { expanded = false })
         }
     }
@@ -250,12 +383,13 @@ fun ShowDialog(
 
 @Composable
 fun TransactionItem(transaction: Transaction, onTransactionClicked: (Transaction) -> Unit) {
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            onTransactionClicked(transaction)
-        }
-        .padding(vertical = 4.dp),
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onTransactionClicked(transaction)
+            }
+            .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)) {
         Row(
@@ -276,7 +410,7 @@ fun TransactionItem(transaction: Transaction, onTransactionClicked: (Transaction
             Text(
                 text = "$${transaction.amount}",
                 fontWeight = FontWeight.Bold,
-                color = if (transaction.amount > 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+                color = if (transaction.isExpense) Color(0xFFF44336) else Color(0xFF4CAF50)
             )
         }
     }

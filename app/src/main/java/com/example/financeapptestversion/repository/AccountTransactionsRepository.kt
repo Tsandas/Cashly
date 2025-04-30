@@ -29,8 +29,8 @@ class AccountTransactionsRepository @Inject constructor(private val appDatabase:
     }
 
     suspend fun updateCashBalance(balance: Double) {
-        Log.d("Cash", "updateCashBalance: $balance")
         appDatabase.accountCashBalanceDao().updateCashBalance(balance)
     }
+
     suspend fun insertCashBalance(accountCashBalance: AccountCashBalance) = appDatabase.accountCashBalanceDao().insertCashBalance(accountCashBalance)
 }

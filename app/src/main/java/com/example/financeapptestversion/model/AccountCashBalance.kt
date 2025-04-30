@@ -13,6 +13,6 @@ data class AccountCashBalance(
     val balance: Double = 0.0,
 
     @ColumnInfo(name = "firebase_user_id")
-    val firebaseUserId: String = ""
+    var firebaseUserId: String = ""
 
 )

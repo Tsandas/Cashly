@@ -54,15 +54,23 @@ fun FinanceStocksScreen(
     navController: NavController, viewModel: StockScreenViewModel = hiltViewModel()
 ) {
 
-    Scaffold(topBar = {
-        FinanceAppBar(title = "Cashly", showProfile = true, navController = navController, icon = Icons.Default.ArrowBack){
-            navController.navigate(AppScreens.HomeScreen.name)
+    Scaffold(
+        topBar = {
+            FinanceAppBar(
+                title = "Cashly",
+                showProfile = true,
+                navController = navController,
+                icon = Icons.Default.ArrowBack
+            ) {
+                navController.navigate(AppScreens.HomeScreen.name)
+            }
+        },
+        floatingActionButton = {
+            FABContent {
+                navController.navigate(AppScreens.SearchScreen.name)
+            }
         }
-    }, floatingActionButton = {
-        FABContent {
-            navController.navigate(AppScreens.SearchScreen.name)
-        }
-    }) {
+    ) {
         Surface(
             modifier = Modifier
                 .padding(it)

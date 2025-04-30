@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.financeapptestversion.model.AccountCashBalance
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.repository.AccountTransactionsRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +43,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
             var balance = repository.getAccountBalance()
             Log.d("Cash", "init: $balance")
             if (balance == null) {
-                val defaultAccount = AccountCashBalance(id = 0, balance = 0.0)
+                val defaultAccount = AccountCashBalance(id = 0, balance = 0.0, firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString())
                 repository.insertCashBalance(defaultAccount) // You need to implement this
                 //_accountCashBalance.value = defaultAccount
                 balance = 0.0
@@ -59,6 +60,8 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
     fun addTransaction(transaction: Transaction) {
         var amount =  if (transaction.isExpense) -transaction.amount else transaction.amount
         var newBalance = _accountCashBalance.value!!.balance + amount
+        transaction.firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        Log.d("Cash", "addTransaction: $transaction")
         viewModelScope.launch { repository.addTransaction(transaction) }
         _accountCashBalance.value = AccountCashBalance(id = 0, balance = newBalance)
         viewModelScope.launch { repository.updateCashBalance(newBalance) }

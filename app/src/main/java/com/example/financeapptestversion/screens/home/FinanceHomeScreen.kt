@@ -1,6 +1,9 @@
 package com.example.financeapptestversion.screens.home
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -19,29 +22,33 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,17 +60,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.model.AccountCashBalance
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltViewModel()) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    var expanded by remember { mutableStateOf(false) }
 
     val openDialog = remember {
         mutableStateOf(false)
@@ -73,234 +82,287 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
         mutableStateOf(false)
     }
 
-    Scaffold(topBar = {
-        FinanceAppBar(
-            title = "CASHLY",
-            showProfile = false,
-            navController = navController,
-            icon = Icons.Default.MoreVert
-        ) {
-            expanded = true
-        }
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-                openAddDialog.value = true
-//                viewModel.addTransaction(
-//                    Transaction(amount = 2315.2, title = "TestingDb")
-//                )
-            }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Transaction")
-        }
-    }) { paddingValues ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color(0xFFF2F2F2))
-        ) {
-            Column(
+    val syncData = remember {
+        mutableStateOf(false)
+    }
+
+
+    val currentAccount = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState, drawerContent = {
+            ModalDrawerSheet {
+                Text(
+                    "Profile", modifier = Modifier
+                        .padding(top = 40.dp)
+                        .clickable {
+                            scope.launch {
+                                drawerState.close()
+                            }
+                            navController.navigate(AppScreens.StatsScreen.name)
+                        })
+                Text(
+                    "Stocks", modifier = Modifier
+                        .padding(top = 40.dp)
+                        .clickable {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(AppScreens.StocksScreen.name)
+                        })
+                Text(
+                    "Settings", modifier = Modifier
+                        .padding(top = 40.dp)
+                        .clickable {
+                            scope.launch { drawerState.close() }
+                        })
+                Text(
+                    "Logout", modifier = Modifier
+                        .padding(top = 40.dp)
+                        .clickable {
+                            scope.launch {
+                                drawerState.close()
+                            }
+                            FirebaseAuth.getInstance().signOut().run {
+                                navController.navigate(AppScreens.LoginScreen.name)
+                            }
+                        })
+            }
+        }) {
+
+        Scaffold(topBar = {
+            TopAppBar(title = { Text("Cashly") }, navigationIcon = {
+                IconButton(onClick = {
+                    scope.launch { drawerState.open() }
+                }) {
+                    Icon(Icons.Default.Menu, contentDescription = "Open drawer")
+                }
+            })
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    openAddDialog.value = true
+                }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Transaction")
+            }
+        }) { paddingValues ->
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(paddingValues)
+                    .background(Color(0xFFF2F2F2))
             ) {
-                Text(
-                    text = "Welcome back, User!",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Welcome back, User!",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                var newBalance = remember {
-                    mutableStateOf(0.0)
-                }
-                val inputText = remember { mutableStateOf(newBalance.value.toString()) }
-
-
-                if (openAddDialog.value) {
-
-                    var transactionAmount = remember {
+                    var newBalance = remember {
                         mutableStateOf(0.0)
                     }
-
-                    var transactionAmountText = remember {
-                        mutableStateOf(transactionAmount.value.toString())
+                    val inputText = remember {
+                        mutableStateOf(newBalance.value.toString())
                     }
 
-                    var transactionName = remember {
-                        mutableStateOf("")
-                    }
 
-                    var transactionIsExpense = remember {
-                        mutableStateOf(false)
-                    }
+                    if (openAddDialog.value) {
 
-                    var context = LocalContext.current
+                        var transactionAmount = remember {
+                            mutableStateOf(0.0)
+                        }
 
-                    ShowDialog(title = "Add transaction", openDialog = openAddDialog, content = {
-                        Column {
-                            Text(text = "Add a new transaction")
-                            OutlinedTextField(
-                                value = transactionName.value,
-                                onValueChange = { input ->
-                                    transactionName.value = input
-                                },
-                                label = { Text("Enter the transactions name") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                singleLine = true,
-                                enabled = true,
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        keyboardController?.hide()
-                                    })
-                            )
+                        var transactionAmountText = remember {
+                            mutableStateOf(transactionAmount.value.toString())
+                        }
 
-                            Row(
-                                Modifier
-                                    .padding(16.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(Color.LightGray)
-                            ) {
-                                val selectedColor = Color.Blue
-                                val unselectedColor = Color.Gray
+                        var transactionName = remember {
+                            mutableStateOf("")
+                        }
 
-                                Text(
-                                    "Income",
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clickable { transactionIsExpense.value = false }
-                                        .background(if (!transactionIsExpense.value) Color.Green else unselectedColor)
-                                        .padding(8.dp),
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
-                                Text(
-                                    "Expense",
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clickable { transactionIsExpense.value = true }
-                                        .background(if (transactionIsExpense.value) Color.Red else unselectedColor)
-                                        .padding(8.dp),
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                        var transactionIsExpense = remember {
+                            mutableStateOf(false)
+                        }
 
-                            Text(text = "Add amount")
-                            OutlinedTextField(
-                                value = transactionAmountText.value.toString(),
-                                onValueChange = { input ->
-                                    if (input.isEmpty() || input.matches(Regex("^\\d*\\.?\\d*\$"))) {
-                                        transactionAmountText.value = input
-                                        transactionAmount.value = input.toDoubleOrNull() ?: 0.0
+                        var context = LocalContext.current
+
+                        ShowDialog(
+                            title = "Add transaction",
+                            openDialog = openAddDialog,
+                            content = {
+                                Column {
+                                    Text(text = "Add a new transaction")
+                                    OutlinedTextField(
+                                        value = transactionName.value,
+                                        onValueChange = { input ->
+                                            transactionName.value = input
+                                        },
+                                        label = { Text("Enter the transactions name") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        singleLine = true,
+                                        enabled = true,
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                keyboardController?.hide()
+                                            })
+                                    )
+
+                                    Row(
+                                        Modifier
+                                            .padding(16.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(Color.LightGray)
+                                    ) {
+                                        val selectedColor = Color.Blue
+                                        val unselectedColor = Color.Gray
+
+                                        Text(
+                                            "Income",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clickable { transactionIsExpense.value = false }
+                                                .background(if (!transactionIsExpense.value) Color.Green else unselectedColor)
+                                                .padding(8.dp),
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center)
+                                        Text(
+                                            "Expense",
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clickable { transactionIsExpense.value = true }
+                                                .background(if (transactionIsExpense.value) Color.Red else unselectedColor)
+                                                .padding(8.dp),
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center)
                                     }
-                                },
-                                label = { Text("Enter amount") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                singleLine = true,
-                                enabled = true,
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        keyboardController?.hide()
-                                    })
-                            )
-                        }
-                    }, onYesPressed = {
 
-                        if (transactionName.value.isEmpty() || transactionAmount.value.toString()
-                                .isEmpty()
-                        ) {
-                            Toast.makeText(
-                                context,
-                                "Please enter the transaction's name and amount.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            viewModel.addTransaction(
-                                Transaction(
-                                    title = transactionName.value,
-                                    amount = transactionAmount.value,
-                                    isExpense = transactionIsExpense.value
-                                )
-                            )
-                            openAddDialog.value = false
-                        }
-                    })
-
-
-                }
-
-                if (openDialog.value) {
-                    ShowDialog(title = "Update Balance", openDialog = openDialog, content = {
-                        Text(text = "Enter new balance:")
-                        OutlinedTextField(
-                            value = inputText.value.toString(),
-                            onValueChange = { input ->
-                                if (input.isEmpty() || input.matches(Regex("^\\d*\\.?\\d*\$"))) {
-                                    inputText.value = input
-                                    newBalance.value = input.toDoubleOrNull() ?: 0.0
+                                    Text(text = "Add amount")
+                                    OutlinedTextField(
+                                        value = transactionAmountText.value.toString(),
+                                        onValueChange = { input ->
+                                            if (input.isEmpty() || input.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                                transactionAmountText.value = input
+                                                transactionAmount.value =
+                                                    input.toDoubleOrNull() ?: 0.0
+                                            }
+                                        },
+                                        label = { Text("Enter amount") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        singleLine = true,
+                                        enabled = true,
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                keyboardController?.hide()
+                                            })
+                                    )
                                 }
                             },
-                            label = { Text("Update Balance") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            singleLine = true,
-                            enabled = true,
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    keyboardController?.hide()
-                                })
-                        )
-                    }, onYesPressed = {
-                        viewModel.updateCashBalance(newBalance.value)
-                        openDialog.value = false
-                    })
+                            onYesPressed = {
 
-                }
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "Total Balance",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.Gray
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            var cash = viewModel.accountCashBalance.collectAsState().value?.balance
-                            if (cash.toString().isNullOrEmpty()) {
-                                Log.d("Cash", "Home: $cash")
-                                cash = 0.0
+                                if (transactionName.value.isEmpty() || transactionAmount.value.toString()
+                                        .isEmpty()
+                                ) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please enter the transaction's name and amount.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    viewModel.addTransaction(
+                                        Transaction(
+                                            title = transactionName.value,
+                                            amount = transactionAmount.value,
+                                            isExpense = transactionIsExpense.value
+                                        )
+                                    )
+                                    openAddDialog.value = false
+                                    syncData.value = true
+                                }
                             }
-                            Text(
-                                text = "$${cash.toString()}",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold
+                        )
+
+                    }
+                    if (openDialog.value) {
+                        ShowDialog(title = "Update Balance", openDialog = openDialog, content = {
+                            Text(text = "Enter new balance:")
+                            OutlinedTextField(
+                                value = inputText.value.toString(),
+                                onValueChange = { input ->
+                                    if (input.isEmpty() || input.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                        inputText.value = input
+                                        newBalance.value = input.toDoubleOrNull() ?: 0.0
+                                    }
+                                },
+                                label = { Text("Update Balance") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                singleLine = true,
+                                enabled = true,
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        keyboardController?.hide()
+                                    })
                             )
-                        }
-                        Button(
-                            onClick = { openDialog.value = true },
-                            modifier = Modifier.padding(top = 8.dp)
+                        }, onYesPressed = {
+                            viewModel.updateCashBalance(newBalance.value)
+                            openDialog.value = false
+                            syncData.value = true
+
+                        })
+
+                    }
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Update Balance")
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    "Total Balance",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.Gray
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                var cash =
+                                    viewModel.accountCashBalance.collectAsState().value?.balance
+                                if (cash.toString().isNullOrEmpty()) {
+                                    Log.d("Cash", "Home: $cash")
+                                    cash = 0.0
+                                }
+                                Text(
+                                    text = "$${cash.toString()}",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Button(
+                                onClick = { openDialog.value = true },
+                                modifier = Modifier.padding(top = 8.dp)
+                            ) {
+                                Text("Update Balance")
+                            }
                         }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
 //                Text(
 //                    text = "Spending Overview",
@@ -310,49 +372,100 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
 //
 //                Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Recent Transactions",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
+                    Text(
+                        text = "Recent Transactions",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                var transactions = viewModel.transaction_list.collectAsState().value
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if (transactions.isNotEmpty()) {
+                    var transactions = viewModel.transaction_list.collectAsState().value
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (transactions.isNotEmpty()) {
 
-                        items(transactions) { transaction ->
-                            TransactionItem(transaction) {
-                                viewModel.removeTransaction(transaction)
+                            items(transactions) { transaction ->
+                                TransactionItem(transaction) {
+                                    viewModel.removeTransaction(transaction)
+                                }
                             }
-                        }
-                    } else {
-                        item {
-                            Text(text = "No transactions found")
+                        } else {
+                            item {
+                                Text(text = "No transactions found")
+                            }
                         }
                     }
                 }
             }
-        }
-
-        DropdownMenu(
-            expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(text = { Text("Profile") }, onClick = {
-                expanded = false
-                navController.navigate(AppScreens.StatsScreen.name)
-            })
-            DropdownMenuItem(text = { Text("Settings") }, onClick = { expanded = false })
-            DropdownMenuItem(text = { Text("Stocks") }, onClick = {
-                expanded = false
-                navController.navigate(AppScreens.StocksScreen.name)
-            })
-            DropdownMenuItem(text = { Text("Logout") }, onClick = { expanded = false })
+            val transactions = viewModel.transaction_list.collectAsState()
+            val acc = viewModel.accountCashBalance.collectAsState()
+            val context = LocalContext.current
+            LaunchedEffect(syncData.value, transactions.value, acc.value) {
+                if (syncData.value && acc.value != null) {
+                    syncDataToFireBase(
+                        context = context,
+                        transactions = transactions.value,
+                        account = acc.value!!
+                    )
+                    syncData.value = false
+                }
+            }
         }
     }
 }
+
+
+fun isConnectedToWifi(context: Context): Boolean {
+    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = cm.activeNetwork ?: return false
+    val capabilities = cm.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+}
+
+fun syncDataToFireBase(
+    context: Context,
+    transactions: List<Transaction>,
+    account: AccountCashBalance,
+) {
+
+    if (!isConnectedToWifi(context)) {
+        Log.d("FirebaseSync", "No Wi-Fi connection")
+        return
+    }
+
+    val db = FirebaseFirestore.getInstance()
+
+    val accountCollection = db.collection("accounts")
+
+    if(account.firebaseUserId.isEmpty()) {
+        account.firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+    }
+
+    accountCollection.document(account.firebaseUserId)
+        .set(account)
+        .addOnSuccessListener { Log.d("FirebaseSync", "Account synced") }
+        .addOnFailureListener {Log.e("FirebaseSync", "Failed to sync account", it) }
+
+    val transactionCollection = db.collection("transactions")
+    transactions.forEach { transaction ->
+        transactionCollection
+            .document(transaction.id.toString())
+            .set(transaction)
+            .addOnSuccessListener { Log.d("FirebaseSync", "Transaction ${transaction.id} synced") }
+            .addOnFailureListener {
+                Log.e(
+                    "FirebaseSync",
+                    "Failed to sync transaction ${transaction.id}",
+                    it
+                )
+            }
+    }
+
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -379,7 +492,6 @@ fun ShowDialog(
             })
     }
 }
-
 
 @Composable
 fun TransactionItem(transaction: Transaction, onTransactionClicked: (Transaction) -> Unit) {

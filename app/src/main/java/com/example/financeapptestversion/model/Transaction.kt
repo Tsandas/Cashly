@@ -14,7 +14,7 @@ data class Transaction(
     val id: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "firebase_user_id")
-    val firebaseUserId: String = "",
+    var firebaseUserId: String = "",
 
     @ColumnInfo(name = "transaction_title")
     val title: String,

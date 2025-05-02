@@ -6,6 +6,7 @@ import com.example.financeapptestversion.data.DataOrException
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.network.StocksApi
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
@@ -40,7 +41,8 @@ class FireRepository @Inject constructor(
         val dataOrException = DataOrException<List<Transaction>, Boolean, Exception>()
         try {
             dataOrException.loading = true
-            dataOrException.data = queryTransactions.get().await().documents.map { documentSnapshot ->
+            dataOrException.data = queryTransactions.whereEqualTo("firebaseUserId", FirebaseAuth.getInstance().currentUser?.uid)
+                .get().await().documents.map { documentSnapshot ->
                 documentSnapshot.toObject(Transaction::class.java)!!
             }
             if (!dataOrException.data.isNullOrEmpty()) {

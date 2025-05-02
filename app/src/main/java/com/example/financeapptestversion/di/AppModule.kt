@@ -30,7 +30,8 @@ object AppModule {
     fun provideFireStockRepository(api: StocksApi): FireRepository {
         return FireRepository(
             queryStocks = FirebaseFirestore.getInstance().collection("stocks"),
-             api = provideStockApi()
+            queryTransactions = FirebaseFirestore.getInstance().collection("transactions"),
+            api = provideStockApi()
         )
     }
 
@@ -77,10 +78,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao = appDatabase.transactionDao()
+    fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao =
+        appDatabase.transactionDao()
 
     @Singleton
     @Provides
-    fun provideAccountCashBalanceDao(appDatabase: AppDatabase): AccountCashBalanceDao = appDatabase.accountCashBalanceDao()
+    fun provideAccountCashBalanceDao(appDatabase: AppDatabase): AccountCashBalanceDao =
+        appDatabase.accountCashBalanceDao()
 
 }

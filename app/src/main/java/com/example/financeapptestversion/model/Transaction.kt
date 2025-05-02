@@ -11,21 +11,21 @@ import java.util.UUID
 data class Transaction(
 
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = UUID.randomUUID().toString() ,
 
     @ColumnInfo(name = "firebase_user_id")
     var firebaseUserId: String = "",
 
     @ColumnInfo(name = "transaction_title")
-    val title: String,
+    val title: String = "",
 
     @ColumnInfo(name = "note_entry_date")
     val entryDate: Date = Date.from(Instant.now()),
 
     @ColumnInfo(name = "transaction_amount")
-    val amount: Double,
+    val amount: Double = 0.0,
 
     @ColumnInfo(name = "is_expense")
-    val isExpense: Boolean = true
+    var isExpense: Boolean = true
 
 )

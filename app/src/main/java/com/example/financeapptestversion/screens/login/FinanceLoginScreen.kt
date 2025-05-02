@@ -67,13 +67,13 @@ fun FinanceLoginScreen(
                 if (showLoginForm.value) {
                     UserForm(loading = false, isCreateAccount = false) { email, password ->
                         viewModel.signInWithEmailAndPassword(email, password) {
-                            navController.navigate(AppScreens.HomeScreen.name)
+                            navController.navigate(AppScreens.SplashScreen.name)
                         }
                     }
                 } else {
                     UserForm(loading = false, isCreateAccount = true) { email, password ->
                         viewModel.createUserWithEmailAndPassword(email, password) {
-                            navController.navigate(AppScreens.HomeScreen.name)
+                            navController.navigate(AppScreens.SplashScreen.name)
                         }
                     }
                 }

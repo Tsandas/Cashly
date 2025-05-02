@@ -43,6 +43,27 @@ fun syncDataToFireBase(
         .addOnFailureListener {Log.e("FirebaseSync", "Failed to sync account", it) }
 
     val transactionCollection = db.collection("transactions")
+
+
+    transactionCollection
+        .whereEqualTo("firebaseUserId", account.firebaseUserId)
+        .get()
+        .addOnSuccessListener { snapshot ->
+            val currentTransactionIds = transactions.map { it.id.toString() }.toSet()
+            for (doc in snapshot.documents) {
+                if (!currentTransactionIds.contains(doc.id)) {
+                    doc.reference.delete()
+                        .addOnSuccessListener {
+                            Log.d("FirebaseSync", "Deleted old transaction ${doc.id}")
+                        }
+                        .addOnFailureListener {
+                            Log.e("FirebaseSync", "Failed to delete transaction ${doc.id}", it)
+                        }
+                }
+            }
+        }
+
+
     transactions.forEach { transaction ->
         transactionCollection
             .document(transaction.id.toString())

@@ -1,8 +1,10 @@
 package com.example.financeapptestversion.repository
 
 import android.util.Log
+import com.example.financeapptestversion.data.AppDatabase
 import com.example.financeapptestversion.data.DataOrException
 import com.example.financeapptestversion.model.MStockItem
+import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.network.StocksApi
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -12,6 +14,7 @@ import javax.inject.Inject
 
 class FireRepository @Inject constructor(
     private val queryStocks: Query,
+    private val queryTransactions: Query,
     private val api: StocksApi
 ) {
 
@@ -32,6 +35,25 @@ class FireRepository @Inject constructor(
 
         return dataOrException
     }
+
+    suspend fun getAllTransactionsFromDatabase(): DataOrException<List<Transaction>, Boolean, Exception> {
+        val dataOrException = DataOrException<List<Transaction>, Boolean, Exception>()
+        try {
+            dataOrException.loading = true
+            dataOrException.data = queryTransactions.get().await().documents.map { documentSnapshot ->
+                documentSnapshot.toObject(Transaction::class.java)!!
+            }
+            if (!dataOrException.data.isNullOrEmpty()) {
+                dataOrException.loading = false
+            }
+        } catch (exception: FirebaseFirestoreException) {
+            dataOrException.e = exception
+        }
+        Log.d("FireRepoViewModel", "getAllTransactionsFromDatabase: ${dataOrException.data}")
+        return dataOrException;
+    }
+
+
 
     suspend fun getStock(symbol: String): DataOrException<MStockItem, Boolean, Exception> {
         val dataOrException = DataOrException<MStockItem, Boolean, Exception>()

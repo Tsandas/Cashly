@@ -18,4 +18,7 @@ interface AccountCashBalanceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCashBalance(account: AccountCashBalance)
 
+    @Query("UPDATE account_cash_balance SET cash_balance = 0 WHERE id = 0")
+    suspend fun resetCashBalance()
+
 }

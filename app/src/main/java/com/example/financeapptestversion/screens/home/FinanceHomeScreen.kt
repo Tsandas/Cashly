@@ -242,6 +242,7 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                             items(transactions) { transaction ->
                                 TransactionItem(transaction) {
                                     viewModel.removeTransaction(transaction)
+                                    syncData.value = true
                                 }
                             }
                         } else {
@@ -254,12 +255,12 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
             }
             SyncProcess(viewModel, syncData)
         }
-        LogoutWarning(navController, logout)
+        LogoutWarning(navController, logout, viewModel)
     }
 }
 
 @Composable
-fun LogoutWarning(navController: NavController, logout: MutableState<Boolean>) {
+fun LogoutWarning(navController: NavController, logout: MutableState<Boolean>, viewModel: HomeScreenViewModel) {
     val openDialog = remember { mutableStateOf(false) }
     if (logout.value) {
         logout.value = false
@@ -271,6 +272,7 @@ fun LogoutWarning(navController: NavController, logout: MutableState<Boolean>) {
             text = "Data that has been saved without a wifi connection might get lost.",
             openDialog = openDialog // now this is managed state
         ) {
+            viewModel.clearData()
             FirebaseAuth.getInstance().signOut()
             navController.navigate(AppScreens.LoginScreen.name)
         }

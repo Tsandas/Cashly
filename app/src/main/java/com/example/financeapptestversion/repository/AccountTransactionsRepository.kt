@@ -33,4 +33,7 @@ class AccountTransactionsRepository @Inject constructor(private val appDatabase:
     }
 
     suspend fun insertCashBalance(accountCashBalance: AccountCashBalance) = appDatabase.accountCashBalanceDao().insertCashBalance(accountCashBalance)
+
+    suspend fun resetCashBalance() = appDatabase.accountCashBalanceDao().resetCashBalance()
+
 }

@@ -1,5 +1,7 @@
 package com.example.financeapptestversion.screens
 
+import android.content.Context
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -20,36 +22,73 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.FinanceLogo
+import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun FinanceSplashScreen(navController: NavController) {
+fun FinanceSplashScreen(
+    navController: NavController,
+    viewModel: SplashScreenViewModel = hiltViewModel()
+) {
+
+    var listOfTransactions = emptyList<Transaction>()
+    if (!viewModel.data.value.data.isNullOrEmpty()) {
+        listOfTransactions = viewModel.data.value.data!!.toList()
+        Log.d("splash screen", "FinanceSplashScreen: ${listOfTransactions.toString()}")
+    }
 
     val scale = remember {
         Animatable(0f)
     }
-    LaunchedEffect(true) {
-        scale.animateTo(
-            targetValue = 0.9f,
-            animationSpec = tween(
-                delayMillis = 800,
-                easing = {
-                    OvershootInterpolator(8f).getInterpolation(it)
-                })
-        )
+    LaunchedEffect(viewModel.data.value.loading) {
 
-        delay(2000L)
-
-        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-            navController.navigate(AppScreens.LoginScreen.name)
-        } else {
-            navController.navigate(AppScreens.HomeScreen.name) //make it home later
+        // Start the animation only once
+        if (scale.value == 0f) {
+            scale.animateTo(
+                targetValue = 0.9f,
+                animationSpec = tween(
+                    delayMillis = 800,
+                    easing = { OvershootInterpolator(8f).getInterpolation(it) }
+                )
+            )
         }
+
+        // When loading becomes false, navigate
+        if (viewModel.data.value.loading == false) {
+            delay(500L) // optional: add delay for smoother transition
+            if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+                navController.navigate(AppScreens.LoginScreen.name)
+            } else {
+                viewModel.addTransactions(listOfTransactions)
+                navController.navigate(AppScreens.HomeScreen.name)
+            }
+        }
+//        scale.animateTo(
+//            targetValue = 0.9f,
+//            animationSpec = tween(
+//                delayMillis = 800,
+//                easing = {
+//                    OvershootInterpolator(8f).getInterpolation(it)
+//                })
+//        )
+//
+//        delay(2000L)
+//
+//        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+//            navController.navigate(AppScreens.LoginScreen.name)
+//        } else {
+//            navController.navigate(AppScreens.HomeScreen.name) //make it home later
+//        }
 
     }
 

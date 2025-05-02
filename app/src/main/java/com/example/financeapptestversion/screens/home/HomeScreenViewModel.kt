@@ -67,6 +67,8 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
         viewModelScope.launch { repository.updateCashBalance(newBalance) }
     }
 
+    fun deleteAllTransaction() = viewModelScope.launch { repository.deleteAllTransactions() }
+
     fun updateTransaction(transaction: Transaction) =
         viewModelScope.launch { repository.updateTransaction(transaction) }
 
@@ -79,7 +81,15 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
         viewModelScope.launch { repository.updateCashBalance(balance) }
     }
 
-    fun getCashBalance() = viewModelScope.launch { repository.getAccountBalance() ?: 1100.02 }
+    fun getCashBalance() = viewModelScope.launch { repository.getAccountBalance() ?: 0.0 }
+
+    fun resetCashBalance() = viewModelScope.launch { repository.resetCashBalance() }
+
+
+    fun clearData(){
+        resetCashBalance()
+        deleteAllTransaction()
+    }
 
 
 }

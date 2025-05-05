@@ -1,12 +1,23 @@
 package com.example.financeapptestversion.screens.stats
 
+import android.media.Image
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.sharp.Person
@@ -14,15 +25,20 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
@@ -32,12 +48,12 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun FinanceStatsScreen(
-    navController: NavController, viewModel: StockScreenViewModel = hiltViewModel()
+    navController: NavController, viewModel: FinanceStatsScreenViewModel = hiltViewModel()
 ) {
 
     var stocks: List<MStockItem>
     val currentUser = FirebaseAuth.getInstance().currentUser
-
+    val isLoading = viewModel.data.value.loading == true
     Scaffold(
         topBar = {
             FinanceAppBar(
@@ -45,7 +61,7 @@ fun FinanceStatsScreen(
                 showProfile = false,
                 navController = navController,
                 icon = Icons.Default.ArrowBack
-            ){
+            ) {
                 //navController.navigate(AppScreens.StocksScreen.name)
                 navController.popBackStack()
             }
@@ -64,49 +80,141 @@ fun FinanceStatsScreen(
 
             Column {
                 Row(
-
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(45.dp)
-                            .padding(4.dp)
-                    ) {
-                        Icon(imageVector = Icons.Sharp.Person, contentDescription = "User Icon")
-                    }
-                    Text(text = "Hi ${currentUser?.email.toString().split("@")[0].uppercase()}")
+                    Icon(
+                        imageVector = Icons.Sharp.Person,
+                        contentDescription = "User Icon",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = currentUser?.email?.split("@")?.get(0)?.uppercase() ?: "GUEST",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
+
                 Card(
                     modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(),
-                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    elevation = CardDefaults.elevatedCardElevation(4.dp)
                 ) {
-
-                    val ownedStocks: List<MStockItem> =
-                        if (!viewModel.data.value.data.isNullOrEmpty()) {
-                            stocks.filter { mStock ->
-                                mStock.userId == currentUser?.uid.toString()
-                            }
-                        } else {
-                            emptyList()
-                        }
-
-
-                    if(viewModel.data.value.loading==true) {
-                        CircularProgressIndicator()
-                    }else{
-                        for (stock in ownedStocks) {
+                    Row {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Available Cash", style = MaterialTheme.typography.labelLarge)
                             Text(
-                                text = "${stock.symbol}, total shares: ${stock.quantityBought}",
-                                modifier = Modifier.padding(8.dp)
+                                text = "$${viewModel.localAccount.value.balance}",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            if (isLoading) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }else{
+                                Text("Invested Amount", style = MaterialTheme.typography.labelLarge)
+                                var totalInvested = 0.0
+                                stocks.forEach { stock ->
+                                    totalInvested += stock.priceBought!! * stock.quantityBought!!
+                                }
+                                Text(
+                                    text = "$$totalInvested",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
-
                 }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Owned Stocks", style = MaterialTheme.typography.titleMedium)
+
+                        if (isLoading) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        } else {
+                            if (stocks.isEmpty()) {
+                                Text(
+                                    text = "You don't own any stocks yet.",
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(vertical = 15.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    items(stocks) { stock ->
+                                        val imgUrl =
+                                            "https://images.financialmodelingprep.com/symbol/${stock?.symbol}.png"
+                                        val profitPerShare = stock.price - stock.priceBought!!  // This always results in 0
+                                        val totalProfit = profitPerShare * (stock.quantityBought ?: 0)
+                                        val profitColor =
+                                            if (totalProfit >= 0) Color(0xFF4CAF50) else Color(
+                                                0xFFF44336
+                                            )
+
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp, vertical = 10.dp)
+                                                .fillMaxWidth()
+                                                .background(
+                                                    color = Color(0xFFF2F2F2),
+                                                    shape = RoundedCornerShape(8.dp)
+                                                ),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Image(
+                                                painter = rememberAsyncImagePainter(model = imgUrl),
+                                                contentDescription = "Stock Image",
+                                                modifier = Modifier
+                                                    .size(60.dp)
+                                                    .padding(10.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                            )
+
+                                            Spacer(modifier = Modifier.width(8.dp))
+
+                                            Column {
+                                                Text(
+                                                    text = "${stock.symbol} – ${stock.quantityBought} shares",
+                                                    style = MaterialTheme.typography.bodyMedium
+                                                )
+                                                Text(
+                                                    text = "Profit: $${"%.2f".format(totalProfit)}",
+                                                    color = profitColor,
+                                                    style = MaterialTheme.typography.bodySmall
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
             }
-
-
         }
 
     }

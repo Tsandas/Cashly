@@ -16,6 +16,7 @@ import com.example.financeapptestversion.screens.login.FinanceLoginScreen
 import com.example.financeapptestversion.screens.search.FinanceSearchScreen
 import com.example.financeapptestversion.screens.search.StockSearchViewModel
 import com.example.financeapptestversion.screens.stats.FinanceStatsScreen
+import com.example.financeapptestversion.screens.stats.FinanceStatsScreenViewModel
 import com.example.financeapptestversion.screens.stocks.FinanceStocksScreen
 import com.example.financeapptestversion.screens.stocks.StockScreenViewModel
 import com.example.financeapptestversion.screens.update.FinanceUpdateScreen
@@ -61,8 +62,8 @@ fun AppNavigation() {
         }
 
         composable(AppScreens.StatsScreen.name) {
-            val stocksViewModel = hiltViewModel<StockScreenViewModel>()
-            FinanceStatsScreen(navControler, viewModel = stocksViewModel)
+            val financeStatsScreenViewModel = hiltViewModel<FinanceStatsScreenViewModel>()
+            FinanceStatsScreen(navControler, viewModel = financeStatsScreenViewModel)
         }
 
         val updateName = AppScreens.UpdateScreen.name

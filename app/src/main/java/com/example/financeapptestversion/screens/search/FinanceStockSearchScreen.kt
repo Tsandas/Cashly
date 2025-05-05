@@ -61,7 +61,7 @@ fun FinanceSearchScreen(
                 showProfile = false,
                 navController
             ) {
-                navController.popBackStack()
+                navController.navigate(AppScreens.StocksScreen.name)
             }
         }) {
         Surface(modifier = Modifier.padding(it)) {

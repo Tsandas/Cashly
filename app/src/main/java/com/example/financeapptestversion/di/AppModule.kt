@@ -31,6 +31,7 @@ object AppModule {
         return FireRepository(
             queryStocks = FirebaseFirestore.getInstance().collection("stocks"),
             queryTransactions = FirebaseFirestore.getInstance().collection("transactions"),
+            queryAccounts = FirebaseFirestore.getInstance().collection("accounts"),
             api = provideStockApi()
         )
     }

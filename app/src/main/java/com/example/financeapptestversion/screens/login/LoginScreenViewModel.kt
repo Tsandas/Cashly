@@ -69,7 +69,7 @@ class LoginScreenViewModel : ViewModel() {
                             //Todo: ("take users home")
                             home()
                         } else {
-                            Log.d("FB", "createUserWithEmailAndPassword: ${task.result.toString()}")
+                            Log.d("FB", "createUserWithEmailAndPassword: ${task.result}")
                         }
                     }
             } catch (ex: Exception) {

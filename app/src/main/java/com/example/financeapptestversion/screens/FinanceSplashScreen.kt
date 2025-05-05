@@ -1,6 +1,5 @@
 package com.example.financeapptestversion.screens
 
-import android.content.Context
 import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
@@ -27,32 +26,30 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.FinanceLogo
+import com.example.financeapptestversion.model.AccountCashBalance
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
+import com.example.financeapptestversion.utils.isConnectedToWifi
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun FinanceSplashScreen(
     navController: NavController,
-    viewModel: SplashScreenViewModel = hiltViewModel()
+    viewModel: SplashScreenViewModel = hiltViewModel(),
 ) {
-
+    var context = LocalContext.current
     var listOfTransactions = emptyList<Transaction>()
-    if (!viewModel.data.value.data.isNullOrEmpty()) {
-        listOfTransactions = viewModel.data.value.data!!.toList()
-        Log.d("splash screen", "FinanceSplashScreen: ${listOfTransactions.toString()}")
-    }
-
+    var account = AccountCashBalance()
     val scale = remember {
         Animatable(0f)
     }
-    LaunchedEffect(viewModel.data.value.loading) {
 
-        // Start the animation only once
+
+    val localTransactions = viewModel.localAccountTransactions
+    val localAccountCashBalance = viewModel.localAccountCashBalance
+
+    LaunchedEffect(viewModel.accountTransactions.value.loading) {
         if (scale.value == 0f) {
             scale.animateTo(
                 targetValue = 0.9f,
@@ -63,32 +60,45 @@ fun FinanceSplashScreen(
             )
         }
 
-        // When loading becomes false, navigate
-        if (viewModel.data.value.loading == false) {
-            delay(500L) // optional: add delay for smoother transition
+        if (isConnectedToWifi(context)) {
+            if (!viewModel.accountTransactions.value.data.isNullOrEmpty()) {
+                listOfTransactions = viewModel.accountTransactions.value.data!!.toList()
+            }
+            if (viewModel.accountCashBalance.value.data != null) {
+                account = viewModel.accountCashBalance.value.data!!
+            }
+
+            if (localAccountCashBalance.value == 0.0 && localTransactions.value.isEmpty()) {
+                if (viewModel.accountTransactions.value.loading == false && viewModel.accountCashBalance.value.loading == false) {
+                    delay(500L)
+                    if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+                        navController.navigate(AppScreens.LoginScreen.name)
+                    } else {
+                        viewModel.addTransactions(listOfTransactions)
+                        viewModel.addAccountCashBalance(account)
+                        navController.navigate(AppScreens.HomeScreen.name)
+                    }
+                } else {
+                    if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+                        navController.navigate(AppScreens.LoginScreen.name)
+                    }
+                }
+            } else {
+                if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+                    navController.navigate(AppScreens.LoginScreen.name)
+                } else {
+                    viewModel.addTransactions(listOfTransactions)
+                    navController.navigate(AppScreens.HomeScreen.name)
+                }
+            }
+        } else {
             if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
                 navController.navigate(AppScreens.LoginScreen.name)
             } else {
-                viewModel.addTransactions(listOfTransactions)
                 navController.navigate(AppScreens.HomeScreen.name)
             }
         }
-//        scale.animateTo(
-//            targetValue = 0.9f,
-//            animationSpec = tween(
-//                delayMillis = 800,
-//                easing = {
-//                    OvershootInterpolator(8f).getInterpolation(it)
-//                })
-//        )
-//
-//        delay(2000L)
-//
-//        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-//            navController.navigate(AppScreens.LoginScreen.name)
-//        } else {
-//            navController.navigate(AppScreens.HomeScreen.name) //make it home later
-//        }
+
 
     }
 
@@ -113,12 +123,14 @@ fun FinanceSplashScreen(
             Spacer(modifier = Modifier.size(15.dp))
 
             Text(
-                text = "\"Track. Budget. Invest.\"", style = MaterialTheme.typography.titleLarge,
+                text = "\"Track. Budget. Invest.\"",
+                style = MaterialTheme.typography.titleLarge,
                 color = Color.LightGray.copy(alpha = 0.5f)
             )
 
         }
 
     }
+
 
 }

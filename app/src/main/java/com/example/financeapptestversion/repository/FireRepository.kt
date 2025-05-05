@@ -3,6 +3,7 @@ package com.example.financeapptestversion.repository
 import android.util.Log
 import com.example.financeapptestversion.data.AppDatabase
 import com.example.financeapptestversion.data.DataOrException
+import com.example.financeapptestversion.model.AccountCashBalance
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.network.StocksApi
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class FireRepository @Inject constructor(
     private val queryStocks: Query,
     private val queryTransactions: Query,
+    private val queryAccounts: Query,
     private val api: StocksApi
 ) {
 
@@ -41,10 +43,13 @@ class FireRepository @Inject constructor(
         val dataOrException = DataOrException<List<Transaction>, Boolean, Exception>()
         try {
             dataOrException.loading = true
-            dataOrException.data = queryTransactions.whereEqualTo("firebaseUserId", FirebaseAuth.getInstance().currentUser?.uid)
+            dataOrException.data = queryTransactions.whereEqualTo(
+                "firebaseUserId",
+                FirebaseAuth.getInstance().currentUser?.uid
+            )
                 .get().await().documents.map { documentSnapshot ->
-                documentSnapshot.toObject(Transaction::class.java)!!
-            }
+                    documentSnapshot.toObject(Transaction::class.java)!!
+                }
             if (!dataOrException.data.isNullOrEmpty()) {
                 dataOrException.loading = false
             }
@@ -55,6 +60,33 @@ class FireRepository @Inject constructor(
         return dataOrException;
     }
 
+    suspend fun getAccountFromDatabase(): DataOrException<AccountCashBalance, Boolean, Exception> {
+        val dataOrException = DataOrException<AccountCashBalance, Boolean, Exception>()
+
+        try {
+            dataOrException.loading = true
+            val snapshot = queryAccounts
+                .whereEqualTo("firebaseUserId", FirebaseAuth.getInstance().currentUser?.uid)
+                .get()
+                .await()
+
+            if (!snapshot.isEmpty) {
+                val document = snapshot.documents.first()
+                val account = document.toObject(AccountCashBalance::class.java)
+                if (account != null) {
+                    dataOrException.data = account
+                }
+            }
+
+            dataOrException.loading = false
+
+        } catch (exception: FirebaseFirestoreException) {
+            dataOrException.e = exception
+        }
+
+
+        return dataOrException
+    }
 
 
     suspend fun getStock(symbol: String): DataOrException<MStockItem, Boolean, Exception> {

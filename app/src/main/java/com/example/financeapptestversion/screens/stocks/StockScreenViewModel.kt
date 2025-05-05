@@ -68,7 +68,6 @@ class StockScreenViewModel @Inject constructor(
 
     fun loadStocksWithLatestPrices() {
         viewModelScope.launch {
-            //stocksState.value = stocksState.value.copy(loading = true)
             val localStocks = repository.getAllStocksFromDatabase()
 
             val updatedStocks = localStocks.data?.map { stock ->

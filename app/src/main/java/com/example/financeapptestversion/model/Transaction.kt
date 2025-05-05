@@ -17,7 +17,7 @@ data class Transaction(
     var firebaseUserId: String = "",
 
     @ColumnInfo(name = "transaction_title")
-    val title: String = "",
+    var title: String = "",
 
     @ColumnInfo(name = "note_entry_date")
     val entryDate: Date = Date.from(Instant.now()),

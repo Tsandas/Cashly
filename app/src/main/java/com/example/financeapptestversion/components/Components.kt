@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.AlertDialog
@@ -325,12 +326,12 @@ fun ShowDialogHomeScreen(
 
 
 @Composable
-fun TransactionItem(transaction: Transaction, onTransactionClicked: (Transaction) -> Unit) {
+fun TransactionItem(transaction: Transaction, onDeleteClicked: (Transaction) -> Unit, onCardClicked: (Transaction) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onTransactionClicked(transaction)
+                onCardClicked(transaction)
             }
             .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -354,6 +355,14 @@ fun TransactionItem(transaction: Transaction, onTransactionClicked: (Transaction
                 text = "$${transaction.amount}",
                 fontWeight = FontWeight.Bold,
                 color = if (transaction.isExpense) Color(0xFFF44336) else Color(0xFF4CAF50)
+            )
+            Icon(
+                modifier = Modifier.clickable {
+                    onDeleteClicked(transaction)
+                },
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete Icon",
+                tint = Color.Gray
             )
         }
     }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,28 +28,26 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
     val accountCashBalance = _accountCashBalance.asStateFlow()
 
     init {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            val account = repository.getAccount().firstOrNull()
+            if (account == null) {
+                val defaultAccount = AccountCashBalance(
+                    id = 0,
+                    balance = 0.0,
+                    firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+                )
+                repository.insertCashBalance(defaultAccount)
+                _accountCashBalance.value = defaultAccount
+            } else {
+                _accountCashBalance.value = account
+            }
+        }
         viewModelScope.launch(
             Dispatchers.IO
         ) {
             repository.getAllTransactions().distinctUntilChanged().collect { listOfNotes ->
                 Log.d("Cash", "init: $listOfNotes")
                 _transactionList.value = listOfNotes
-            }
-        }
-        viewModelScope.launch(
-            Dispatchers.IO
-        ) {
-            Log.d("Cash", "init: before")
-            var balance = repository.getAccountBalance()
-            Log.d("Cash", "init: $balance")
-            if (balance == null) {
-                val defaultAccount = AccountCashBalance(id = 0, balance = 0.0, firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString())
-                repository.insertCashBalance(defaultAccount) // You need to implement this
-                //_accountCashBalance.value = defaultAccount
-                balance = 0.0
-            } else {
-                _accountCashBalance.value = AccountCashBalance(id = 0, balance = balance)
             }
         }
     }
@@ -76,12 +75,9 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
         viewModelScope.launch { repository.deleteTransaction(transaction) }
 
     fun updateCashBalance(balance: Double) {
-        Log.d("Cash", "updateCashBalance: $balance")
         _accountCashBalance.value = AccountCashBalance(id = 0, balance = balance)
         viewModelScope.launch { repository.updateCashBalance(balance) }
     }
-
-    fun getCashBalance() = viewModelScope.launch { repository.getAccountBalance() ?: 0.0 }
 
     fun resetCashBalance() = viewModelScope.launch { repository.resetCashBalance() }
 

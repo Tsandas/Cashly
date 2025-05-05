@@ -31,7 +31,9 @@ import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.utils.isConnectedToWifi
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
 fun FinanceSplashScreen(
@@ -39,66 +41,83 @@ fun FinanceSplashScreen(
     viewModel: SplashScreenViewModel = hiltViewModel(),
 ) {
     var context = LocalContext.current
-    var listOfTransactions = emptyList<Transaction>()
-    var account = AccountCashBalance()
     val scale = remember {
         Animatable(0f)
     }
-
-
-    val localTransactions = viewModel.localAccountTransactions
-    val localAccountCashBalance = viewModel.localAccountCashBalance
-
-    LaunchedEffect(viewModel.accountTransactions.value.loading) {
-        if (scale.value == 0f) {
-            scale.animateTo(
-                targetValue = 0.9f,
-                animationSpec = tween(
-                    delayMillis = 800,
-                    easing = { OvershootInterpolator(8f).getInterpolation(it) }
-                )
+    LaunchedEffect(true) {
+        scale.animateTo(
+            targetValue = 0.9f,
+            animationSpec = tween(
+                delayMillis = 800,
+                easing = { OvershootInterpolator(8f).getInterpolation(it) }
             )
-        }
+        )
 
-        if (isConnectedToWifi(context)) {
-            if (!viewModel.accountTransactions.value.data.isNullOrEmpty()) {
-                listOfTransactions = viewModel.accountTransactions.value.data!!.toList()
-            }
-            if (viewModel.accountCashBalance.value.data != null) {
-                account = viewModel.accountCashBalance.value.data!!
-            }
+        val isUserLoggedIn = !FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()
 
-            if (localAccountCashBalance.value == 0.0 && localTransactions.value.isEmpty()) {
-                if (viewModel.accountTransactions.value.loading == false && viewModel.accountCashBalance.value.loading == false) {
-                    delay(500L)
-                    if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-                        navController.navigate(AppScreens.LoginScreen.name)
-                    } else {
-                        viewModel.addTransactions(listOfTransactions)
-                        viewModel.addAccountCashBalance(account)
-                        navController.navigate(AppScreens.HomeScreen.name)
-                    }
-                } else {
-                    if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-                        navController.navigate(AppScreens.LoginScreen.name)
-                    }
-                }
-            } else {
-                if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-                    navController.navigate(AppScreens.LoginScreen.name)
-                } else {
-                    viewModel.addTransactions(listOfTransactions)
-                    navController.navigate(AppScreens.HomeScreen.name)
-                }
-            }
-        } else {
-            if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+        if (!isConnectedToWifi(context)) {
+            if (!isUserLoggedIn) {
                 navController.navigate(AppScreens.LoginScreen.name)
             } else {
                 navController.navigate(AppScreens.HomeScreen.name)
             }
+            return@LaunchedEffect
+        }
+        if (!isUserLoggedIn) {
+            navController.navigate(AppScreens.LoginScreen.name)
+            return@LaunchedEffect
         }
 
+    }
+
+    var cloudTransactions = emptyList<Transaction>()
+    var cloudAccount = AccountCashBalance()
+    val localTransactions = viewModel.localAccountTransactions
+    val localAccountCashBalance = viewModel.localAccountCashBalance
+    val localAccount = viewModel.localAccount
+
+    LaunchedEffect(
+        viewModel.accountTransactions.value.loading,
+        viewModel.cloudAccount.value.loading
+    ) {
+
+        if (!viewModel.accountTransactions.value.data.isNullOrEmpty()) {
+            cloudTransactions = viewModel.accountTransactions.value.data!!.toList()
+        }
+        if (viewModel.cloudAccount.value.data != null) {
+            cloudAccount = viewModel.cloudAccount.value.data!!
+        }
+
+        if (localAccountCashBalance.value == 0.0 && localTransactions.value.isEmpty()) {
+            Log.d("FinanceSplashScreen", "Logging in")
+            if (viewModel.accountTransactions.value.loading == false && viewModel.cloudAccount.value.loading == false) {
+                Log.d("FinanceSplashScreen", "Cloud account: ${viewModel.cloudAccount.value.data}")
+                Log.d("FinanceSplashScreen", "Cloud transactions: ${viewModel.accountTransactions.value.data}")
+                delay(800L)
+                withContext(Dispatchers.IO) {
+                    viewModel.addAccountCashBalance(cloudAccount)
+                    viewModel.addTransactions(cloudTransactions)
+                }
+                navController.navigate(AppScreens.HomeScreen.name)
+            } else {
+            }
+        } else {
+            if (localAccount.value.lastActivityTimestamp >= cloudAccount.lastActivityTimestamp) {
+                Log.d("FinanceSplashScreen", "Already logged in, keeping local data")
+                navController.navigate(AppScreens.HomeScreen.name)
+            } else {
+                if (viewModel.accountTransactions.value.loading == false && viewModel.cloudAccount.value.loading == false) {
+                    Log.d("FinanceSplashScreen", "Already logged in, keeping cloud data")
+                    delay(800L)
+                    withContext(Dispatchers.IO) {
+                        viewModel.addAccountCashBalance(cloudAccount)
+                        viewModel.addTransactions(cloudTransactions)
+                    }
+                    navController.navigate(AppScreens.HomeScreen.name)
+                } else {
+                }
+            }
+        }
 
     }
 
@@ -117,11 +136,8 @@ fun FinanceSplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             FinanceLogo()
-
             Spacer(modifier = Modifier.size(15.dp))
-
             Text(
                 text = "\"Track. Budget. Invest.\"",
                 style = MaterialTheme.typography.titleLarge,
@@ -131,6 +147,4 @@ fun FinanceSplashScreen(
         }
 
     }
-
-
 }

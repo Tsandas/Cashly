@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FinanceApp(){
+fun FinanceApp() {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -47,9 +47,7 @@ fun FinanceApp(){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppNavigation()
-
         }
-
     }
 }
 

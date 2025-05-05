@@ -10,6 +10,8 @@ import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.repository.AccountTransactionsRepository
 import com.example.financeapptestversion.repository.FireRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +31,7 @@ class SplashScreenViewModel @Inject constructor(
             )
         )
 
-    val accountCashBalance: MutableState<DataOrException<AccountCashBalance, Boolean, Exception>> =
+    val cloudAccount: MutableState<DataOrException<AccountCashBalance, Boolean, Exception>> =
         mutableStateOf(
             DataOrException(
                 AccountCashBalance(),
@@ -38,15 +40,32 @@ class SplashScreenViewModel @Inject constructor(
             )
         )
 
+
+    val localAccount: MutableState<AccountCashBalance> = mutableStateOf(AccountCashBalance())
     val localAccountCashBalance: MutableState<Double> = mutableStateOf(0.0)
     var localAccountTransactions: MutableState<List<Transaction>> = mutableStateOf(listOf())
 
+    //val cloudAccount: MutableState<AccountCashBalance> = mutableStateOf(AccountCashBalance())
+
     init {
-        getAllTransactionsFromDatabase()
-        getAccountCashBalance()
+        viewModelScope.launch(Dispatchers.IO) {
+            getAllTransactionsFromDatabase()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            getAccountCashBalance()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            getLocalTransactions()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            getLocalAccountCashBalanceII()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            getLocalAccount()
+        }
     }
 
-    fun getLocalTransactions(){
+    fun getLocalTransactions() {
         viewModelScope.launch {
             accountTransactionsRepository.getAllTransactions().collect { transactions ->
                 localAccountTransactions.value = transactions
@@ -54,9 +73,23 @@ class SplashScreenViewModel @Inject constructor(
         }
     }
 
-    fun getLocalAccountCashBalance(){
+    fun getLocalAccount() {
         viewModelScope.launch {
-            localAccountCashBalance.value = accountTransactionsRepository.getAccountBalance()!!
+            accountTransactionsRepository.getAccount().collect {
+                localAccount.value = it
+            }
+        }
+    }
+
+    fun getLocalAccountCashBalance() {
+        viewModelScope.launch {
+            localAccountCashBalance.value = accountTransactionsRepository.getAccountBalance() ?: 0.0
+        }
+    }
+
+    fun getLocalAccountCashBalanceII() {
+        viewModelScope.launch {
+            localAccountCashBalance.value = accountTransactionsRepository.getAccount().firstOrNull()?.balance ?: 0.0
         }
     }
 
@@ -64,17 +97,18 @@ class SplashScreenViewModel @Inject constructor(
         viewModelScope.launch {
             accountTransactions.value.loading = true
             accountTransactions.value = repository.getAllTransactionsFromDatabase()
-            if (!accountTransactions.value.data.isNullOrEmpty()) accountTransactions.value.loading = false
+            if (accountTransactions.value.data != null) accountTransactions.value.loading = false
         }
     }
 
-    fun getAccountCashBalance(){
+    fun getAccountCashBalance() {
         viewModelScope.launch {
-            accountCashBalance.value.loading = true
-            accountCashBalance.value = repository.getAccountFromDatabase()
-            if(accountCashBalance.value.data != null) accountCashBalance.value.loading = false
+            cloudAccount.value.loading = true
+            cloudAccount.value = repository.getAccountFromDatabase()
+            if (cloudAccount.value.data != null) cloudAccount.value.loading = false
         }
     }
+
 
     fun addTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
@@ -84,11 +118,10 @@ class SplashScreenViewModel @Inject constructor(
         }
     }
 
-    fun addAccountCashBalance(accountCashBalance: AccountCashBalance){
+    fun addAccountCashBalance(accountCashBalance: AccountCashBalance) {
         viewModelScope.launch {
             accountTransactionsRepository.updateCashBalance(accountCashBalance.balance)
         }
-
     }
 
 }

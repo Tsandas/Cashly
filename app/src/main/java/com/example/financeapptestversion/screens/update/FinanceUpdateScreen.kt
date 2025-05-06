@@ -1,6 +1,7 @@
 package com.example.financeapptestversion.screens.update
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -28,7 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -164,24 +162,28 @@ fun ShowUpdateFields(stock: MStockItem?, navController: NavController) {
 
         val context = LocalContext.current
 
-
+        Log.d(
+            "TAG",
+            "updates stuff price: ${priceText.value}, quantity: ${quantityText.value}"
+        )
         val stockToUpdate = hashMapOf(
             "price_bought" to priceText.value.toDoubleOrNull(),
             "quantity_bought" to quantityText.value.toDoubleOrNull()
         ).toMap()
         RoundedButton(label = "Update") {
-            if (stockUpdate) {
-                Log.d(
-                    "TAG",
-                    "updates stuff price: ${priceText.value}, quantity: ${quantityText.value}"
-                )
-                FirebaseFirestore.getInstance().collection("stocks").document(stock?.id.toString())
-                    .update(stockToUpdate).addOnCompleteListener { task ->
-                        showToast(context, "Stock Updated Successfully!")
-                        navController.navigate(AppScreens.StocksScreen.name)
-                    }.addOnFailureListener {
-                        showToast(context, "An error occurred, please try again later.")
-                    }
+            if (priceText.value.isEmpty() || quantityText.value.isEmpty()) {
+                Toast.makeText(context, "Please enter valid price and quantity", Toast.LENGTH_SHORT).show()
+            } else {
+                if (stockUpdate) {
+                    FirebaseFirestore.getInstance().collection("stocks")
+                        .document(stock?.id.toString())
+                        .update(stockToUpdate).addOnCompleteListener { task ->
+                            showToast(context, "Stock Updated Successfully!")
+                            navController.navigate(AppScreens.StocksScreen.name)
+                        }.addOnFailureListener {
+                            showToast(context, "An error occurred, please try again later.")
+                        }
+                }
             }
         }
         Spacer(Modifier.width(20.dp))
@@ -256,26 +258,19 @@ fun updateFields(
         mutableStateOf(defaultBuyPrice)
     }
 
-    val priceQuantityValue = rememberSaveable {
+    val quantityFielValue = rememberSaveable {
         mutableStateOf(defaultQuantity)
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    val validState = remember(
-        priceFieldValue.value, priceQuantityValue.value
-    ) {
-        priceFieldValue.value.trim().isNotEmpty() && priceQuantityValue.value.trim().isNotEmpty()
-    }
+
 
     Column(
 
     ) {
 
         fun tryUpdate() {
-            if (validState) {
-                onSearch(priceFieldValue.value.trim(), priceQuantityValue.value.trim())
-                keyboardController?.hide()
-            }
+            onSearch(priceFieldValue.value.trim(), quantityFielValue.value.trim())
         }
 
         OutlinedTextField(
@@ -284,9 +279,11 @@ fun updateFields(
                 .fillMaxWidth()
                 .background(Color.White),
             value = priceFieldValue.value,
-            onValueChange = {
-                priceFieldValue.value = it
-                tryUpdate()
+            onValueChange = { input ->
+                if (input.isEmpty() || input.matches(Regex("^\\d+(\\.\\d{0,2})?$"))) {
+                    priceFieldValue.value = input
+                    tryUpdate()
+                }
             },
             label = { Text("Enter new buy price") },
             singleLine = true,
@@ -297,10 +294,12 @@ fun updateFields(
                 .padding(4.dp)
                 .fillMaxWidth()
                 .background(Color.White),
-            value = priceQuantityValue.value,
-            onValueChange = {
-                priceQuantityValue.value = it
-                tryUpdate()
+            value = quantityFielValue.value,
+            onValueChange = { input ->
+                if (input.isEmpty() || input.matches(Regex("^\\d+$"))) {
+                    quantityFielValue.value = input
+                    tryUpdate()
+                }
             },
             label = { Text("Enter new quantity") },
             singleLine = true,

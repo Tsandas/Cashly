@@ -17,8 +17,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +33,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -54,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.financeapptestversion.components.BottomBar
 import com.example.financeapptestversion.components.ShowDialogHomeScreen
 import com.example.financeapptestversion.components.TransactionItem
 import com.example.financeapptestversion.model.Transaction
@@ -131,6 +137,12 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                             scope.launch { drawerState.close() }
                         })
                 Text(
+                    "About", modifier = Modifier
+                        .padding(top = 40.dp)
+                        .clickable {
+                            scope.launch { drawerState.close() }
+                        })
+                Text(
                     "Logout", modifier = Modifier
                         .padding(top = 40.dp)
                         .clickable {
@@ -143,23 +155,27 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
             }
         }) {
 
-        Scaffold(topBar = {
-            TopAppBar(title = { Text("Cashly") }, navigationIcon = {
-                IconButton(onClick = {
-                    scope.launch { drawerState.open() }
-                }) {
-                    Icon(Icons.Default.Menu, contentDescription = "Open drawer")
+        Scaffold(
+            topBar = {
+                TopAppBar(title = { Text("Cashly") }, navigationIcon = {
+                    IconButton(onClick = {
+                        scope.launch { drawerState.open() }
+                    }) {
+                        Icon(Icons.Default.Menu, contentDescription = "Open drawer")
+                    }
+                })
+            }, floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        openAddTransactionDialog.value = true
+                    }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Transaction")
                 }
-            })
-        }, floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    openAddTransactionDialog.value = true
-                }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Transaction")
-            }
-        }) { paddingValues ->
+            },
+            bottomBar = {
+                BottomBar(navController, homeScreen = true)
+            }) { paddingValues ->
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
@@ -205,7 +221,6 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                             syncData = syncData
                         )
                     }
-
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),

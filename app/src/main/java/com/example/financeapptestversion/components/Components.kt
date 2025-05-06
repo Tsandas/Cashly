@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,9 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +38,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,6 +62,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -174,9 +185,8 @@ fun TitleSection(modifier: Modifier = Modifier, label: String) {
         Column {
             Text(
                 text = label,
-                fontSize = 19.sp,
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Left
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -248,22 +258,99 @@ fun FinanceAppBar(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FinanceAppBarII(
+    title: String,
+    icon: ImageVector? = null,
+    navController: NavController,
+    onBackArrowClicked: () -> Unit = {},
+    infoIconAction: (() -> Unit)? = null
+) {
+    TopAppBar(
+        title = {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        },
+        navigationIcon = {
+            if (icon != null) {
+                IconButton(onClick = { onBackArrowClicked() }) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        },
+        actions = {
+            if(infoIconAction != null){
+                IconButton(onClick = infoIconAction) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "Info",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    )
+}
+
+@Composable
+fun BottomBar(navController: NavController, homeScreen: Boolean = false, stocksScreen: Boolean = false) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primary
+    ) {
+        NavigationBarItem(
+            selected = homeScreen,
+            onClick = { navController.navigate(AppScreens.HomeScreen.name) },
+            icon = {
+                Icon(
+                    Icons.Default.Home,
+                    contentDescription = "Home",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            },
+            label = { Text("Home", color = MaterialTheme.colorScheme.onPrimary) }
+        )
+        NavigationBarItem(
+            selected = stocksScreen,
+            onClick = { navController.navigate(AppScreens.StocksScreen.name) },
+            icon = {
+                Icon(
+                    Icons.Default.ShowChart,
+                    contentDescription = "Stocks",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            },
+            label = { Text("Stocks", color = MaterialTheme.colorScheme.onPrimary) }
+        )
+    }
+}
+
 
 @Composable
 fun FABContent(onTap: () -> Unit) {
-
     FloatingActionButton(
         onClick = { onTap() }, shape = RoundedCornerShape(50.dp), containerColor = Color(0xFF009688)
     ) {
-
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Add Stock",
             tint = Color(0xFF8BC34A)
         )
-
     }
-
 }
 
 
@@ -289,7 +376,32 @@ fun RoundedButton(
             Text(text = label, style = TextStyle(color = Color.White, fontSize = 15.sp))
         }
     }
+}
 
+@Composable
+fun RoundedButtonI(
+    label: String = "More",
+    radius: Dp = 24.dp,
+    modifier: Modifier = Modifier,
+    onPressDetails: () -> Unit = {}
+) {
+    Button(
+        onClick = onPressDetails,
+        shape = RoundedCornerShape(radius),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
+        modifier = modifier
+            .height(48.dp)
+            .widthIn(min = 100.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp)
+        )
+    }
 }
 
 

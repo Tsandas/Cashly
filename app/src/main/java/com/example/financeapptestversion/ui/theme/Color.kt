@@ -25,3 +25,8 @@ val GreenSecondaryDark = Color(0xFF76FF03)
 val BackgroundDark = Color(0xFF121212)
 val SurfaceDark = Color(0xFF1E1E1E)
 val TextPrimaryDark = Color(0xFFE0E0E0)
+
+val CardBackground = Color(0xFFEFF5F0) // Light greenish-gray
+val AccentColor = Color(0xFF00C853) // Main action color
+val SoftGray = Color(0xFFBDBDBD)
+val WarningRed = Color(0xFFFF5252)

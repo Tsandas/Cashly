@@ -21,29 +21,6 @@ class StockScreenViewModel @Inject constructor(
         DataOrException(listOf(), true, Exception(""))
     )
 
-
-//    val tempHotStocks = listOf<String>(
-//        "AMZN", "MSFT", "NVDA", "GOOGL", "META"
-//    )
-//
-//    val hotStocks: MutableState<DataOrException<List<MStockItem>, Boolean, Exception>> = mutableStateOf(
-//        DataOrException(listOf(), true, Exception(""))
-//    )
-//
-//    fun getHotStocks(): List<MStockItem> {
-//        val hotStocks = mutableListOf<MStockItem>()
-//        for (symbol in tempHotStocks) {
-//            viewModelScope.launch {
-//                val stock = repository.getStock(symbol).data
-//                if (stock != null) {
-//                    hotStocks.add(stock)
-//                }
-//            }
-//        }
-//        Log.d("StockScreenViewModel", "getHotStocks(): ${hotStocks}")
-//        return hotStocks
-//    }
-
     val stocksState = mutableStateOf<DataOrException<List<MStockItem>, Boolean, Exception>>(
         DataOrException(listOf(), true, Exception(""))
     )

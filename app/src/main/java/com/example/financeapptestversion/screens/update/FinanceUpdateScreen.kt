@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,7 +29,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,13 +52,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.room.util.TableInfo
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.R
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.components.FinanceAppBarII
-import com.example.financeapptestversion.components.RoundedButton
 import com.example.financeapptestversion.components.RoundedButtonI
 import com.example.financeapptestversion.components.showToast
 import com.example.financeapptestversion.data.DataOrException
@@ -81,7 +76,7 @@ fun FinanceUpdateScreen(
             title = "Update Stock",
             navController = navController,
             icon = Icons.Default.ArrowBack,
-            onBackArrowClicked = {
+            onIconClicked = {
                 navController.popBackStack()
             })
     }, bottomBar = {

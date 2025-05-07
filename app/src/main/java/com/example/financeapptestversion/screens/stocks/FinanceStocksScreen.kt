@@ -47,6 +47,8 @@ import com.example.financeapptestversion.components.FinanceAppBarII
 import com.example.financeapptestversion.components.TitleSection
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
+import com.example.financeapptestversion.ui.theme.LossRedLightBackground
+import com.example.financeapptestversion.ui.theme.ProfitGreenLightBackground
 import com.example.financeapptestversion.utils.toAbbreviated
 import com.google.firebase.auth.FirebaseAuth
 
@@ -62,7 +64,7 @@ fun FinanceStocksScreen(
             title = "Cashly",
             navController = navController,
             icon = Icons.Default.ArrowBack,
-            onBackArrowClicked = {
+            onIconClicked = {
                 navController.navigate(AppScreens.HomeScreen.name)
             },
             infoIconAction = {
@@ -217,12 +219,12 @@ fun ListCard(
     }
     val backgroundColor = when {
         profitPercent == null -> MaterialTheme.colorScheme.surface
-        profitPercent >= 0 -> Color(0xFFE8F5E9)
+        profitPercent >= 0 -> ProfitGreenLightBackground
         else -> Color(0xFFFFEBEE)
     }
     val titleColor = when {
         profitPercent == null -> MaterialTheme.colorScheme.surface
-        profitPercent >= 0 -> Color.Green
+        profitPercent >= 0 -> LossRedLightBackground
         else -> Color.Red
     }
 

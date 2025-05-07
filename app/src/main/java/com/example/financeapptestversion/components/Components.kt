@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,13 +54,11 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -264,7 +261,7 @@ fun FinanceAppBarII(
     title: String,
     icon: ImageVector? = null,
     navController: NavController,
-    onBackArrowClicked: () -> Unit = {},
+    onIconClicked: () -> Unit = {},
     infoIconAction: (() -> Unit)? = null
 ) {
     TopAppBar(
@@ -281,7 +278,7 @@ fun FinanceAppBarII(
         },
         navigationIcon = {
             if (icon != null) {
-                IconButton(onClick = { onBackArrowClicked() }) {
+                IconButton(onClick = { onIconClicked() }) {
                     Icon(
                         imageVector = icon,
                         contentDescription = "Back",

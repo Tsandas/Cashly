@@ -1,8 +1,8 @@
 package com.example.financeapptestversion.screens.stats
 
-import android.media.Image
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,16 +11,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,15 +36,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.components.BottomBar
+import com.example.financeapptestversion.components.FinanceAppBarII
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
-import com.example.financeapptestversion.screens.stocks.StockScreenViewModel
+import com.example.financeapptestversion.ui.theme.LossRedLightBackground
+import com.example.financeapptestversion.ui.theme.ProfitGreenLightBackground
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -56,18 +60,19 @@ fun FinanceStatsScreen(
     val isLoading = viewModel.data.value.loading == true
     Scaffold(
         topBar = {
-            FinanceAppBar(
+            FinanceAppBarII(
                 title = "My Stats",
-                showProfile = false,
                 navController = navController,
-                icon = Icons.Default.ArrowBack
-            ) {
-                //navController.navigate(AppScreens.StocksScreen.name)
-                navController.popBackStack()
-            }
-        }) {
+                icon = Icons.Default.ArrowBack,
+                onIconClicked = {
+                    navController.popBackStack()
+                }
+            )
+        },
+        bottomBar = { BottomBar(navController) }
+    ) {
         Surface(
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(it).fillMaxSize()
         ) {
 
             stocks = if (!viewModel.data.value.data.isNullOrEmpty()) {
@@ -78,7 +83,9 @@ fun FinanceStatsScreen(
                 emptyList()
             }
 
-            Column {
+            Column(
+                Modifier.padding(8.dp)
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -120,7 +127,7 @@ fun FinanceStatsScreen(
                                 ) {
                                     CircularProgressIndicator()
                                 }
-                            }else{
+                            } else {
                                 Text("Invested Amount", style = MaterialTheme.typography.labelLarge)
                                 var totalInvested = 0.0
                                 stocks.forEach { stock ->
@@ -136,7 +143,9 @@ fun FinanceStatsScreen(
                     }
                 }
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
                     elevation = CardDefaults.elevatedCardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -153,10 +162,35 @@ fun FinanceStatsScreen(
                             }
                         } else {
                             if (stocks.isEmpty()) {
-                                Text(
-                                    text = "You don't own any stocks yet.",
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "Empty Portfolio",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(64.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = "Your portfolio is empty",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Add stocks to start tracking your investments.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                                    )
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                    Button(onClick = { navController.navigate(AppScreens.SearchScreen.name) }) {
+                                        Text(text = "Add Stocks")
+                                    }
+                                }
                             } else {
                                 LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
@@ -166,46 +200,63 @@ fun FinanceStatsScreen(
                                     items(stocks) { stock ->
                                         val imgUrl =
                                             "https://images.financialmodelingprep.com/symbol/${stock?.symbol}.png"
-                                        val profitPerShare = stock.price - stock.priceBought!!  // This always results in 0
-                                        val totalProfit = profitPerShare * (stock.quantityBought ?: 0)
+                                        val profitPerShare =
+                                            stock.price - stock.priceBought!!  // This always results in 0
+                                        val totalProfit =
+                                            profitPerShare * (stock.quantityBought ?: 0)
                                         val profitColor =
                                             if (totalProfit >= 0) Color(0xFF4CAF50) else Color(
                                                 0xFFF44336
                                             )
+                                        val backgroundColor =
+                                            if (totalProfit >= 0) ProfitGreenLightBackground else LossRedLightBackground
 
-                                        Row(
+                                        Card(
+                                            shape = RoundedCornerShape(24.dp),
+                                            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+                                            elevation = CardDefaults.cardElevation(8.dp),
                                             modifier = Modifier
-                                                .padding(horizontal = 8.dp, vertical = 10.dp)
-                                                .fillMaxWidth()
-                                                .background(
-                                                    color = Color(0xFFF2F2F2),
-                                                    shape = RoundedCornerShape(8.dp)
-                                                ),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Image(
-                                                painter = rememberAsyncImagePainter(model = imgUrl),
-                                                contentDescription = "Stock Image",
+                                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                                .clickable {
+                                                    //onPressDetails.invoke(stock.id.toString())
+                                                }) {
+
+                                            Row(
                                                 modifier = Modifier
-                                                    .size(60.dp)
-                                                    .padding(10.dp)
-                                                    .clip(RoundedCornerShape(8.dp))
-                                            )
-
-                                            Spacer(modifier = Modifier.width(8.dp))
-
-                                            Column {
-                                                Text(
-                                                    text = "${stock.symbol} – ${stock.quantityBought} shares",
-                                                    style = MaterialTheme.typography.bodyMedium
+                                                    .padding(horizontal = 8.dp, vertical = 10.dp)
+                                                    .fillMaxWidth()
+                                                    .background(
+                                                        color = Color(0xFFF2F2F2),
+                                                        shape = RoundedCornerShape(8.dp)
+                                                    ),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Image(
+                                                    painter = rememberAsyncImagePainter(model = imgUrl),
+                                                    contentDescription = "Stock Image",
+                                                    modifier = Modifier
+                                                        .size(60.dp)
+                                                        .padding(10.dp)
+                                                        .clip(RoundedCornerShape(8.dp))
                                                 )
-                                                Text(
-                                                    text = "Profit: $${"%.2f".format(totalProfit)}",
-                                                    color = profitColor,
-                                                    style = MaterialTheme.typography.bodySmall
-                                                )
+
+                                                Spacer(modifier = Modifier.width(8.dp))
+
+                                                Column {
+                                                    Text(
+                                                        text = "${stock.symbol} – ${stock.quantityBought} shares",
+                                                        style = MaterialTheme.typography.bodyMedium
+                                                    )
+                                                    Text(
+                                                        text = "Profit: $${"%.2f".format(totalProfit)}",
+                                                        color = profitColor,
+                                                        style = MaterialTheme.typography.bodySmall
+                                                    )
+                                                }
                                             }
+
                                         }
+
                                     }
                                 }
                             }

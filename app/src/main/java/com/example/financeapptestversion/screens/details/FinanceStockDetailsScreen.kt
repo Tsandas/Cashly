@@ -70,7 +70,7 @@ fun FinanceStockDetailsScreen(
                 title = "Stock Details",
                 icon = Icons.Default.ArrowBack,
                 navController = navController,
-                onBackArrowClicked = {
+                onIconClicked = {
                     navController.popBackStack()
                 }
             )

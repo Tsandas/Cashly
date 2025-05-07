@@ -17,11 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,17 +26,13 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.BottomBar
+import com.example.financeapptestversion.components.FinanceAppBarII
 import com.example.financeapptestversion.components.ShowDialogHomeScreen
 import com.example.financeapptestversion.components.TransactionItem
 import com.example.financeapptestversion.model.Transaction
@@ -157,13 +151,16 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
 
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text("Cashly") }, navigationIcon = {
-                    IconButton(onClick = {
-                        scope.launch { drawerState.open() }
-                    }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Open drawer")
-                    }
+                FinanceAppBarII(title = "Cashly", navController = navController, icon = Icons.Default.Menu, onIconClicked = {
+                    scope.launch { drawerState.open() }
                 })
+//                TopAppBar(title = { Text("Cashly") }, navigationIcon = {
+//                    IconButton(onClick = {
+//                        scope.launch { drawerState.open() }
+//                    }) {
+//                        Icon(Icons.Default.Menu, contentDescription = "Open drawer")
+//                    }
+//                })
             }, floatingActionButton = {
                 FloatingActionButton(
                     onClick = {

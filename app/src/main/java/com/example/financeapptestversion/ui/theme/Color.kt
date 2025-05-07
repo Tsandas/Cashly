@@ -19,8 +19,8 @@ val BackgroundLight = Color(0xFFF9F9F9)
 val SurfaceLight = Color(0xFFFFFFFF)
 val TextPrimaryLight = Color(0xFF1B1B1B)
 
-val ProfitGreenLightBackground =  Color(0xFFE8F5E9)
-val LossRedLightBackground = Color(0xFFFFEBEE)
+val ProfitGreenLightBackground =  Color(0xFFDDEFDE)
+val LossRedLightBackground = Color(0xFFFFE0E4)
 
 // Dark Theme
 val GreenPrimaryDark = Color(0xFF00E676)

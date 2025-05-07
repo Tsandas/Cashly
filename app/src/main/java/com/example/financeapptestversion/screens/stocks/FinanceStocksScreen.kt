@@ -220,13 +220,14 @@ fun ListCard(
     val backgroundColor = when {
         profitPercent == null -> MaterialTheme.colorScheme.surface
         profitPercent >= 0 -> ProfitGreenLightBackground
-        else -> Color(0xFFFFEBEE)
+        else -> LossRedLightBackground
     }
-    val titleColor = when {
-        profitPercent == null -> MaterialTheme.colorScheme.surface
-        profitPercent >= 0 -> LossRedLightBackground
-        else -> Color.Red
-    }
+    val titleColor = Color.Black
+//        when {
+//        profitPercent == null -> MaterialTheme.colorScheme.surface
+//        profitPercent >= 0 -> Color.Green
+//        else -> Color.Red
+//    }
 
     //Symbol Limited to AAPL, TSLA, AMZN, MSFT, NVDA, GOOGL, META, NFLX, JPM, V, BAC, AMD,
     // PYPL, DIS, T, PFE, COST, INTC, KO, TGT, NKE, SPY, BA, BABA, XOM, WMT, GE, CSCO, VZ,
@@ -264,14 +265,14 @@ fun ListCard(
                 color = titleColor
             )
             Text(
-                text = "$${stock.price}",
+                text = "Current price: $${stock.price}",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color.Black
             )
             stock.priceBought?.let { buyPrice ->
                 val profit = ((stock.price - buyPrice) / buyPrice * 100)
                 Text(
-                    text = if (profit >= 0) "↑ +%.2f%%".format(profit) else "↓ %.2f%%".format(profit),
+                    text = if (profit >= 0) "Profit: ↑ +%.2f%%".format(profit) else "Loss: ↓ %.2f%%".format(profit),
                     style = MaterialTheme.typography.labelSmall,
                     color = if (profit >= 0) Color(0xFF00C853) else Color.Red
                 )

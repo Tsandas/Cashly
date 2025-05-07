@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.Person
 import androidx.compose.material3.Button
@@ -72,7 +73,9 @@ fun FinanceStatsScreen(
         bottomBar = { BottomBar(navController) }
     ) {
         Surface(
-            modifier = Modifier.padding(it).fillMaxSize()
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
         ) {
 
             stocks = if (!viewModel.data.value.data.isNullOrEmpty()) {
@@ -229,7 +232,7 @@ fun FinanceStatsScreen(
                                                         color = Color(0xFFF2F2F2),
                                                         shape = RoundedCornerShape(8.dp)
                                                     ),
-                                                verticalAlignment = Alignment.CenterVertically
+                                                verticalAlignment = Alignment.CenterVertically,
                                             ) {
                                                 Image(
                                                     painter = rememberAsyncImagePainter(model = imgUrl),
@@ -248,11 +251,25 @@ fun FinanceStatsScreen(
                                                         style = MaterialTheme.typography.bodyMedium
                                                     )
                                                     Text(
-                                                        text = "Profit: $${"%.2f".format(totalProfit)}",
+                                                        text = if (totalProfit >= 0) "Profit: $${
+                                                            "%.2f".format(
+                                                                totalProfit
+                                                            )
+                                                        }" else
+                                                            "Loss: -$${"%.2f".format(totalProfit * -1)}",
                                                         color = profitColor,
                                                         style = MaterialTheme.typography.bodySmall
                                                     )
                                                 }
+                                                Spacer(modifier = Modifier.weight(1f))
+                                                Icon(
+                                                    imageVector = Icons.Default.Edit,
+                                                    contentDescription = "Edit stock",
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.clickable {
+                                                        navController.navigate(AppScreens.UpdateScreen.name + "/${stock.id}")
+                                                    }
+                                                )
                                             }
 
                                         }

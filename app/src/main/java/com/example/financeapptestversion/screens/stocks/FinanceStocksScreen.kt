@@ -69,8 +69,7 @@ fun FinanceStocksScreen(
             },
             infoIconAction = {
                 navController.navigate(AppScreens.HomeScreen.name)
-            }
-        )
+            })
     }, floatingActionButton = {
         FloatingActionButton(
             onClick = {
@@ -111,10 +110,10 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
         "N/A"
     }
 
-
-
-    val totalInvested = listOfStocks.sumOf { it.priceBought?.times((it.quantityBought ?: 0)) ?: 0.0  }
-    val totalProfit = listOfStocks.sumOf { (it.price - (it.priceBought ?: 0.0)).times((it.quantityBought ?: 0))  }
+    val totalInvested =
+        listOfStocks.sumOf { it.priceBought?.times((it.quantityBought ?: 0)) ?: 0.0 }
+    val totalProfit =
+        listOfStocks.sumOf { (it.price - (it.priceBought ?: 0.0)).times((it.quantityBought ?: 0)) }
     val totalValue = totalInvested + totalProfit
 
     Column(
@@ -129,8 +128,7 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
         ) {
             TitleSection(label = "My Stocks")
             Spacer(modifier = Modifier.fillMaxWidth(1f))
@@ -222,6 +220,9 @@ fun ListCard(
         profitPercent >= 0 -> ProfitGreenLightBackground
         else -> LossRedLightBackground
     }
+    val profitPerShare = stock.price - stock.priceBought!!  // This always results in 0
+    val totalProfit = profitPerShare * (stock.quantityBought ?: 0)
+
     val titleColor = Color.Black
 //        when {
 //        profitPercent == null -> MaterialTheme.colorScheme.surface
@@ -272,7 +273,13 @@ fun ListCard(
             stock.priceBought?.let { buyPrice ->
                 val profit = ((stock.price - buyPrice) / buyPrice * 100)
                 Text(
-                    text = if (profit >= 0) "Profit: ↑ +%.2f%%".format(profit) else "Loss: ↓ %.2f%%".format(profit),
+                    text = if (profit >= 0) "Profit: ↑ +%.2f%%, $${"%.2f".format(totalProfit)}".format(
+                        profit
+                    ) else "Loss: ↓ %.2f%%, -$${
+                        "%.2f".format(
+                            totalProfit*(-1)
+                        )
+                    }".format(profit),
                     style = MaterialTheme.typography.labelSmall,
                     color = if (profit >= 0) Color(0xFF00C853) else Color.Red
                 )
@@ -287,9 +294,7 @@ fun ListCard(
 
 @Composable
 fun PortfolioSummaryCard(
-    totalInvested: Double,
-    totalValue: Double,
-    totalProfit: Double
+    totalInvested: Double, totalValue: Double, totalProfit: Double
 ) {
     Card(
         modifier = Modifier
@@ -300,8 +305,7 @@ fun PortfolioSummaryCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 20.dp)
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             Text(
                 text = "My Portfolio",
@@ -310,11 +314,10 @@ fun PortfolioSummaryCard(
             )
             Spacer(Modifier.height(20.dp))
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()
             ) {
-                StatColumn("Invested", totalInvested)
                 StatColumn("Current", totalValue)
+                StatColumn("Invested", totalInvested)
                 StatColumn("Profit", totalProfit)
             }
         }

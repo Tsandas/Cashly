@@ -151,16 +151,14 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
 
         Scaffold(
             topBar = {
-                FinanceAppBarII(title = "Cashly", navController = navController, icon = Icons.Default.Menu, onIconClicked = {
-                    scope.launch { drawerState.open() }
-                })
-//                TopAppBar(title = { Text("Cashly") }, navigationIcon = {
-//                    IconButton(onClick = {
-//                        scope.launch { drawerState.open() }
-//                    }) {
-//                        Icon(Icons.Default.Menu, contentDescription = "Open drawer")
-//                    }
-//                })
+                FinanceAppBarII(
+                    title = "Cashly",
+                    navController = navController,
+                    icon = Icons.Default.Menu,
+                    onIconClicked = {
+                        scope.launch { drawerState.open() }
+                    },
+                    infoIconAction = { navController.navigate(AppScreens.AboutScreen.name) })
             }, floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
@@ -242,7 +240,8 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                                 Text(
                                     text = "$${cash.toString()}",
                                     style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
                                 )
                             }
                             Button(

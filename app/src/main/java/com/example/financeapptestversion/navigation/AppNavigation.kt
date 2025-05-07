@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.financeapptestversion.screens.FinanceSplashScreen
 import com.example.financeapptestversion.screens.SplashScreenViewModel
+import com.example.financeapptestversion.screens.about.FinanceAboutScreen
 import com.example.financeapptestversion.screens.details.FinanceStockDetailsScreen
 import com.example.financeapptestversion.screens.home.Home
 import com.example.financeapptestversion.screens.home.HomeScreenViewModel
@@ -33,6 +34,10 @@ fun AppNavigation() {
         composable(AppScreens.HomeScreen.name) {
             val viewModel = hiltViewModel<HomeScreenViewModel>()
             Home(navControler, viewModel)
+        }
+
+        composable(AppScreens.AboutScreen.name) {
+            FinanceAboutScreen(navControler)
         }
 
         composable(AppScreens.StocksScreen.name) {

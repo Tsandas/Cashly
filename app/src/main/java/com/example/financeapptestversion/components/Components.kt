@@ -66,6 +66,8 @@ import androidx.navigation.NavController
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun FinanceLogo(modifier: Modifier = Modifier) {
@@ -452,12 +454,14 @@ fun TransactionItem(transaction: Transaction, onDeleteClicked: (Transaction) -> 
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val formatter = SimpleDateFormat("dd MMM HH:mm", Locale.getDefault())
+            val formattedDate = formatter.format(transaction.entryDate)
             Column {
-                Text(transaction.title, fontWeight = FontWeight.Bold)
+                Text(transaction.title, fontWeight = FontWeight.Bold, color = Color.Black)
                 Text(
-                    transaction.entryDate.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    text = formattedDate,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
                 )
             }
             Text(

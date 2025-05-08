@@ -65,7 +65,7 @@ fun FinanceSearchScreen(
                 navController.navigate(AppScreens.StocksScreen.name)
             },
             navController = navController,
-            infoIconAction = { navController.navigate(AppScreens.HomeScreen.name) })
+            infoIconAction = { navController.navigate(AppScreens.AboutScreen.name) })
     }, bottomBar = {
         BottomBar(navController)
     }) {
@@ -258,60 +258,3 @@ fun SearchForm(
         }
     }
 }
-//
-//fun SearchForm(
-//    modifier: Modifier = Modifier,
-//    loading: Boolean = false,
-//    hint: String = "Search",
-//    viewModel: StockSearchViewModel,
-//    onSearch: (String) -> Unit = {}
-//) {
-//    val searchQueryState = rememberSaveable {
-//        mutableStateOf("")
-//    }
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//    val isValid = remember(searchQueryState.value) {
-//        searchQueryState.value.trim().isNotEmpty()
-//    }
-//    Column(modifier = modifier.padding(16.dp)) {
-//        Row(
-//            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-//        ) {
-//            OutlinedTextField(
-//                value = searchQueryState.value,
-//                onValueChange = { searchQueryState.value = it },
-//                placeholder = { Text(hint) },
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(end = 8.dp),
-//                singleLine = true,
-//                shape = RoundedCornerShape(12.dp),
-//                keyboardActions = KeyboardActions(
-//                    onDone = {
-//                        if (!isValid) return@KeyboardActions
-//                        onSearch(searchQueryState.value.trim())
-//                        searchQueryState.value = ""
-//                        keyboardController?.hide()
-//                    }))
-//            Button(
-//                onClick = {
-//                    if (isValid) {
-//                        onSearch(searchQueryState.value.trim())
-//                        searchQueryState.value = ""
-//                        keyboardController?.hide()
-//                    }
-//                }, enabled = !loading && isValid, shape = RoundedCornerShape(12.dp)
-//            ) {
-//                if (loading) {
-//                    CircularProgressIndicator(
-//                        color = MaterialTheme.colorScheme.onPrimary,
-//                        modifier = Modifier.size(16.dp),
-//                        strokeWidth = 2.dp
-//                    )
-//                } else {
-//                    Icon(Icons.Default.Search, contentDescription = "Search")
-//                }
-//            }
-//        }
-//    }
-//}

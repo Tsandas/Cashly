@@ -420,19 +420,68 @@ fun ShowDialogHomeScreen(
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
-            title = { Text(text = title) },
-            text = { content() },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    content()
+                }
+            },
             confirmButton = {
-                TextButton(onClick = { onYesPressed.invoke() }) {
-                    Text(text = "Yes")
+                TextButton(
+                    onClick = { onYesPressed.invoke() },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "Yes",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                    )
                 }
             },
             dismissButton = {
-                TextButton(onClick = { openDialog.value = false }) {
-                    Text(text = "No")
+                TextButton(
+                    onClick = { openDialog.value = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "No",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                    )
                 }
-            })
+            }
+        )
     }
+
+
+//    if (openDialog.value) {
+//        AlertDialog(
+//            onDismissRequest = { openDialog.value = false },
+//            title = { Text(text = title) },
+//            text = { content() },
+//            confirmButton = {
+//                TextButton(onClick = { onYesPressed.invoke() }) {
+//                    Text(text = "Yes")
+//                }
+//            },
+//            dismissButton = {
+//                TextButton(onClick = { openDialog.value = false }) {
+//                    Text(text = "No")
+//                }
+//            })
+//    }
 }
 
 

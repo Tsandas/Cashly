@@ -66,7 +66,6 @@ class LoginScreenViewModel : ViewModel() {
                                 "FB",
                                 "createUserWithEmailAndPassword: Fuck yea ${task.result.toString()}"
                             )
-                            //Todo: ("take users home")
                             home()
                         } else {
                             Log.d("FB", "createUserWithEmailAndPassword: ${task.result}")
@@ -76,6 +75,5 @@ class LoginScreenViewModel : ViewModel() {
                 Log.d("FB", "createUserWithEmailAndPassword: ${ex.message}")
             }
         }
-
 
 }

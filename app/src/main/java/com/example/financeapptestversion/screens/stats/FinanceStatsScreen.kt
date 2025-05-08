@@ -228,10 +228,11 @@ fun FinanceStatsScreen(
                                                 modifier = Modifier
                                                     .padding(horizontal = 8.dp, vertical = 10.dp)
                                                     .fillMaxWidth()
-                                                    .background(
-                                                        color = Color(0xFFF2F2F2),
-                                                        shape = RoundedCornerShape(8.dp)
-                                                    ),
+//                                                    .background(
+//                                                        color = Color(0xFFF2F2F2),
+//                                                        shape = RoundedCornerShape(8.dp)
+//                                                    )
+                                                        ,
                                                 verticalAlignment = Alignment.CenterVertically,
                                             ) {
                                                 Image(
@@ -248,7 +249,8 @@ fun FinanceStatsScreen(
                                                 Column {
                                                     Text(
                                                         text = "${stock.symbol} – ${stock.quantityBought} shares",
-                                                        style = MaterialTheme.typography.bodyMedium
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        color = Color.Black
                                                     )
                                                     Text(
                                                         text = if (totalProfit >= 0) "Profit: $${
@@ -265,7 +267,7 @@ fun FinanceStatsScreen(
                                                 Icon(
                                                     imageVector = Icons.Default.Edit,
                                                     contentDescription = "Edit stock",
-                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    tint = Color.Black,
                                                     modifier = Modifier.clickable {
                                                         navController.navigate(AppScreens.UpdateScreen.name + "/${stock.id}")
                                                     }

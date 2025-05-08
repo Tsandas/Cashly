@@ -8,17 +8,27 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,9 +51,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -59,6 +71,8 @@ import com.example.financeapptestversion.components.TransactionItem
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.screens.update.ShowAlertDialog
+import com.example.financeapptestversion.ui.theme.GreenPrimary
+import com.example.financeapptestversion.ui.theme.WarningRed
 import com.example.financeapptestversion.utils.syncDataToFireBase
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -107,70 +121,77 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
 
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
-            ModalDrawerSheet {
-                Text(
-                    "Profile", modifier = Modifier
-                        .padding(top = 40.dp)
-                        .clickable {
-                            scope.launch {
-                                drawerState.close()
-                            }
+            ModalDrawerSheet(
+                modifier = Modifier.fillMaxHeight(),
+                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
+                drawerContainerColor = MaterialTheme.colorScheme.surface
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Spacer(modifier = Modifier.height(32.dp))
+
+
+                    Text(
+                        text = "Cashly", style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                    DrawerItem(
+                        label = "Profile", icon = Icons.Default.Person, onClick = {
+                            scope.launch { drawerState.close() }
                             navController.navigate(AppScreens.StatsScreen.name)
                         })
-                Text(
-                    "Stocks", modifier = Modifier
-                        .padding(top = 40.dp)
-                        .clickable {
+
+                    DrawerItem(
+                        label = "Stocks", icon = Icons.Default.ShowChart, onClick = {
                             scope.launch { drawerState.close() }
                             navController.navigate(AppScreens.StocksScreen.name)
                         })
-                Text(
-                    "Settings", modifier = Modifier
-                        .padding(top = 40.dp)
-                        .clickable {
+
+//                    DrawerItem(
+//                        label = "Settings", icon = Icons.Default.Settings, onClick = {
+//                            scope.launch { drawerState.close() }
+//                            //navController.navigate(AppScreens.SettingsScreen.name)
+//                        })
+
+                    DrawerItem(
+                        label = "About", icon = Icons.Default.Info, onClick = {
                             scope.launch { drawerState.close() }
+                            navController.navigate(AppScreens.AboutScreen.name)
                         })
-                Text(
-                    "About", modifier = Modifier
-                        .padding(top = 40.dp)
-                        .clickable {
+
+                    DrawerItem(
+                        label = "Logout", icon = Icons.Default.Logout, onClick = {
                             scope.launch { drawerState.close() }
-                        })
-                Text(
-                    "Logout", modifier = Modifier
-                        .padding(top = 40.dp)
-                        .clickable {
-                            scope.launch {
-                                drawerState.close()
-                            }
                             syncData.value = true
                             logout.value = true
-                        })
+                        }, iconTint = WarningRed
+                    )
+
+                }
             }
         }) {
-
-        Scaffold(
-            topBar = {
-                FinanceAppBarII(
-                    title = "Cashly",
-                    navController = navController,
-                    icon = Icons.Default.Menu,
-                    onIconClicked = {
-                        scope.launch { drawerState.open() }
-                    },
-                    infoIconAction = { navController.navigate(AppScreens.AboutScreen.name) })
-            }, floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        openAddTransactionDialog.value = true
-                    }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Transaction")
-                }
-            },
-            bottomBar = {
-                BottomBar(navController, homeScreen = true)
-            }) { paddingValues ->
+        Scaffold(topBar = {
+            FinanceAppBarII(
+                title = "Cashly",
+                navController = navController,
+                icon = Icons.Default.Menu,
+                onIconClicked = {
+                    scope.launch { drawerState.open() }
+                },
+                infoIconAction = { navController.navigate(AppScreens.AboutScreen.name) })
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    openAddTransactionDialog.value = true
+                }, containerColor = Color(0xFF4CAF50), contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Transaction")
+            }
+        }, bottomBar = {
+            BottomBar(navController, homeScreen = true)
+        }) { paddingValues ->
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
@@ -254,13 +275,6 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
-//                Text(
-//                    text = "Spending Overview",
-//                    style = MaterialTheme.typography.titleMedium,
-//                    fontWeight = FontWeight.SemiBold
-//                )
-//                Spacer(modifier = Modifier.height(16.dp))
-
                     Text(
                         text = "Recent Transactions",
                         style = MaterialTheme.typography.titleMedium,
@@ -274,20 +288,45 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                     ) {
                         if (transactions.isNotEmpty()) {
                             items(transactions) { transaction ->
-                                TransactionItem(
-                                    transaction,
-                                    onDeleteClicked = {
-                                        deleteTransaction.value = transaction
-                                        openDeleteTransactionDialog.value = true
-                                    },
-                                    onCardClicked = {
-                                        openUpdateTransactionDialog.value = true
-                                        updateTransaction.value = transaction
-                                    })
+                                TransactionItem(transaction, onDeleteClicked = {
+                                    deleteTransaction.value = transaction
+                                    openDeleteTransactionDialog.value = true
+                                }, onCardClicked = {
+                                    openUpdateTransactionDialog.value = true
+                                    updateTransaction.value = transaction
+                                })
                             }
                         } else {
                             item {
-                                Text(text = "No transactions found")
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "No transactions found",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(64.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = "Your transactions list is empty",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Add transactions to start tracking them.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                                    )
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                    Button(onClick = { openAddTransactionDialog.value = true }) {
+                                        Text(text = "Add transaction")
+                                    }
+                                }
                             }
                         }
                     }
@@ -329,8 +368,15 @@ fun UpdateTransaction(
         title = "Update transaction",
         openDialog = openUpdateTransactionDialog,
         content = {
-            Column {
-                Text(text = "Update Transaction name")
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Update Transaction Name",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
                 OutlinedTextField(
                     value = transactionName.value,
                     onValueChange = { input ->
@@ -347,31 +393,42 @@ fun UpdateTransaction(
                             keyboardController?.hide()
                         })
                 )
-                Row(
-                    Modifier
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray)
-                ) {
-                    val unselectedColor = Color.Gray
+                Spacer(modifier = Modifier.height(16.dp))
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(50))
+                        .background(Color(0xFFECECEC))
+                        .padding(4.dp)
+                ) {
+                    val toggleModifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(50))
+                        .clickable { transactionIsExpense.value = false }
+                        .padding(vertical = 8.dp)
+
+                    val activeColor = GreenPrimary
                     Text(
                         "Income",
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { transactionIsExpense.value = false }
-                            .background(if (!transactionIsExpense.value) Color.Green else unselectedColor)
-                            .padding(8.dp),
-                        color = Color.White,
-                        textAlign = TextAlign.Center)
+                        modifier = toggleModifier
+                            .background(
+                                if (!transactionIsExpense.value) activeColor else Color.Transparent
+                            )
+                            .padding(horizontal = 8.dp),
+                        color = if (!transactionIsExpense.value) Color.White else Color.Black,
+                        textAlign = TextAlign.Center
+                    )
+
                     Text(
                         "Expense",
-                        modifier = Modifier
-                            .weight(1f)
+                        modifier = toggleModifier
                             .clickable { transactionIsExpense.value = true }
-                            .background(if (transactionIsExpense.value) Color.Red else unselectedColor)
-                            .padding(8.dp),
-                        color = Color.White,
+                            .background(
+                                if (transactionIsExpense.value) WarningRed else Color.Transparent
+                            )
+                            .padding(horizontal = 8.dp),
+                        color = if (transactionIsExpense.value) Color.White else Color.Black,
                         textAlign = TextAlign.Center)
                 }
 
@@ -630,5 +687,32 @@ private fun SyncProcess(
             )
             syncData.value = false
         }
+    }
+}
+
+@Composable
+fun DrawerItem(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    iconTint: Color = MaterialTheme.colorScheme.primary
+) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() }
+        .padding(vertical = 12.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = iconTint,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }

@@ -68,7 +68,7 @@ fun FinanceStocksScreen(
                 navController.navigate(AppScreens.HomeScreen.name)
             },
             infoIconAction = {
-                navController.navigate(AppScreens.HomeScreen.name)
+                navController.navigate(AppScreens.AboutScreen.name)
             })
     }, floatingActionButton = {
         FloatingActionButton(
@@ -101,13 +101,6 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
         listOfStocks = viewModel.data.value.data!!.toList().filter { mStock ->
             mStock.userId == currentUser?.uid.toString()
         }
-    }
-
-    val email = FirebaseAuth.getInstance().currentUser?.email
-    val currentUserName = if (!email.isNullOrEmpty()) {
-        email?.split("@")[0]
-    } else {
-        "N/A"
     }
 
     val totalInvested =

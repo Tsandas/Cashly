@@ -47,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBarII
+import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.utils.Constants.AVAILABLE_SYMBOLS
@@ -58,7 +58,7 @@ fun FinanceSearchScreen(
     navController: NavController, viewModel: StockSearchViewModel = hiltViewModel()
 ) {
     Scaffold(topBar = {
-        FinanceAppBarII(
+        FinanceAppBar(
             title = "Search for stocks",
             icon = Icons.Default.ArrowBack,
             onIconClicked = {

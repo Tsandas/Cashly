@@ -54,6 +54,7 @@ fun FinanceSplashScreen(
         )
 
         val isUserLoggedIn = !FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()
+        Log.d("FinanceSplashScreen", "isUserLoggedIn: $isUserLoggedIn")
 
         if (!isConnectedToWifi(context)) {
             if (!isUserLoggedIn) {
@@ -80,34 +81,26 @@ fun FinanceSplashScreen(
         viewModel.accountTransactions.value.loading,
         viewModel.cloudAccount.value.loading
     ) {
-
-        if (!viewModel.accountTransactions.value.data.isNullOrEmpty()) {
-            cloudTransactions = viewModel.accountTransactions.value.data!!.toList()
-        }
-        if (viewModel.cloudAccount.value.data != null) {
-            cloudAccount = viewModel.cloudAccount.value.data!!
-        }
-
-        if (localAccountCashBalance.value == 0.0 && localTransactions.value.isEmpty()) {
-            Log.d("FinanceSplashScreen", "Logging in")
-            if (viewModel.accountTransactions.value.loading == false && viewModel.cloudAccount.value.loading == false) {
-                Log.d("FinanceSplashScreen", "Cloud account: ${viewModel.cloudAccount.value.data}")
-                Log.d("FinanceSplashScreen", "Cloud transactions: ${viewModel.accountTransactions.value.data}")
-                delay(800L)
-                withContext(Dispatchers.IO) {
-                    viewModel.addAccountCashBalance(cloudAccount)
-                    viewModel.addTransactions(cloudTransactions)
-                }
-                navController.navigate(AppScreens.HomeScreen.name)
-            } else {
+        val isUserLoggedIn = !FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()
+        if (isUserLoggedIn) {
+            if (!viewModel.accountTransactions.value.data.isNullOrEmpty()) {
+                cloudTransactions = viewModel.accountTransactions.value.data!!.toList()
             }
-        } else {
-            if (localAccount.value.lastActivityTimestamp >= cloudAccount.lastActivityTimestamp) {
-                Log.d("FinanceSplashScreen", "Already logged in, keeping local data")
-                navController.navigate(AppScreens.HomeScreen.name)
-            } else {
+            if (viewModel.cloudAccount.value.data != null) {
+                cloudAccount = viewModel.cloudAccount.value.data!!
+            }
+
+            if (localAccountCashBalance.value == 0.0 && localTransactions.value.isEmpty()) {
+                Log.d("FinanceSplashScreen", "Logging in")
                 if (viewModel.accountTransactions.value.loading == false && viewModel.cloudAccount.value.loading == false) {
-                    Log.d("FinanceSplashScreen", "Already logged in, keeping cloud data")
+                    Log.d(
+                        "FinanceSplashScreen",
+                        "Cloud account: ${viewModel.cloudAccount.value.data}"
+                    )
+                    Log.d(
+                        "FinanceSplashScreen",
+                        "Cloud transactions: ${viewModel.accountTransactions.value.data}"
+                    )
                     delay(800L)
                     withContext(Dispatchers.IO) {
                         viewModel.addAccountCashBalance(cloudAccount)
@@ -115,6 +108,22 @@ fun FinanceSplashScreen(
                     }
                     navController.navigate(AppScreens.HomeScreen.name)
                 } else {
+                }
+            } else {
+                if (localAccount.value.lastActivityTimestamp >= cloudAccount.lastActivityTimestamp) {
+                    Log.d("FinanceSplashScreen", "Already logged in, keeping local data")
+                    navController.navigate(AppScreens.HomeScreen.name)
+                } else {
+                    if (viewModel.accountTransactions.value.loading == false && viewModel.cloudAccount.value.loading == false) {
+                        Log.d("FinanceSplashScreen", "Already logged in, keeping cloud data")
+                        delay(800L)
+                        withContext(Dispatchers.IO) {
+                            viewModel.addAccountCashBalance(cloudAccount)
+                            viewModel.addTransactions(cloudTransactions)
+                        }
+                        navController.navigate(AppScreens.HomeScreen.name)
+                    } else {
+                    }
                 }
             }
         }

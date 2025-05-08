@@ -1,8 +1,6 @@
 package com.example.financeapptestversion.screens.about
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -34,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBarII
+import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.ui.theme.CardBackground
 import com.example.financeapptestversion.utils.Constants.AVAILABLE_SYMBOLS
 
@@ -42,7 +39,7 @@ import com.example.financeapptestversion.utils.Constants.AVAILABLE_SYMBOLS
 fun FinanceAboutScreen(navController: NavController) {
 
     Scaffold(topBar = {
-        FinanceAppBarII(
+        FinanceAppBar(
             title = "About",
             navController = navController,
             icon = Icons.Default.ArrowBack,

@@ -55,8 +55,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.R
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBarII
-import com.example.financeapptestversion.components.RoundedButtonI
+import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.components.RoundedButton
 import com.example.financeapptestversion.components.showToast
 import com.example.financeapptestversion.data.DataOrException
 import com.example.financeapptestversion.model.MStockItem
@@ -72,7 +72,7 @@ fun FinanceUpdateScreen(
 ) {
 
     Scaffold(topBar = {
-        FinanceAppBarII(
+        FinanceAppBar(
             title = "Update Stock",
             navController = navController,
             icon = Icons.Default.ArrowBack,
@@ -176,7 +176,7 @@ fun ShowUpdateFields(stock: MStockItem?, navController: NavController) {
             "price_bought" to priceText.value.toDoubleOrNull(),
             "quantity_bought" to quantityText.value.toDoubleOrNull()
         ).toMap()
-        RoundedButtonI(label = "Update") {
+        RoundedButton(label = "Update") {
             if (priceText.value.isEmpty() || quantityText.value.isEmpty()) {
                 Toast.makeText(context, "Please enter valid price and quantity", Toast.LENGTH_SHORT)
                     .show()
@@ -216,7 +216,7 @@ fun ShowUpdateFields(stock: MStockItem?, navController: NavController) {
                     }
             }
         }
-        RoundedButtonI(label = "Delete") {
+        RoundedButton(label = "Delete") {
             openDialog.value = true
         }
     }

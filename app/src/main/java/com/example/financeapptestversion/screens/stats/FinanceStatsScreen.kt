@@ -1,7 +1,6 @@
 package com.example.financeapptestversion.screens.stats
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBarII
+import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.ui.theme.LossRedLightBackground
@@ -61,7 +60,7 @@ fun FinanceStatsScreen(
     val isLoading = viewModel.data.value.loading == true
     Scaffold(
         topBar = {
-            FinanceAppBarII(
+            FinanceAppBar(
                 title = "My Stats",
                 navController = navController,
                 icon = Icons.Default.ArrowBack,

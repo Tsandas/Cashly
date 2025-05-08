@@ -7,25 +7,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -33,7 +27,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,14 +36,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -65,7 +57,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
-import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -115,15 +106,15 @@ fun InputField(
         onValueChange = {
             valueState.value = it
         },
-        label = { Text(text = labelId) },
+        label = { Text(text = labelId, color = Color.Black) },
         singleLine = isSingleLine,
-        textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.onBackground),
+        textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
         modifier = modifier
             .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
             .fillMaxSize(),
         enabled = enabled,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
-        keyboardActions = onAction
+        keyboardActions = onAction,
     )
 }
 
@@ -147,9 +138,9 @@ fun PasswordInput(
         onValueChange = {
             passwordState.value = it
         },
-        label = { Text(text = labelId) },
+        label = { Text(text = labelId, color = Color.Black) },
         singleLine = true,
-        textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.onBackground),
+        textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
         modifier = Modifier
             .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
             .fillMaxWidth(),
@@ -191,75 +182,9 @@ fun TitleSection(modifier: Modifier = Modifier, label: String) {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceAppBar(
-    title: String,
-    icon: ImageVector? = null,
-    showProfile: Boolean = true,
-    navController: NavController,
-    onBackArrowClicked: () -> Unit = {}
-) {
-
-    TopAppBar(
-        title = {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (showProfile) {
-                Icon(
-                    imageVector = Icons.Default.Money,
-                    contentDescription = "Money Icon",
-                    modifier = Modifier
-                        .clip(
-                            RoundedCornerShape(12.dp)
-                        )
-                        .scale(0.9f)
-                )
-            }
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = "Arrow Back",
-                    tint = Color.Green,
-                    modifier = Modifier.clickable { onBackArrowClicked.invoke() })
-            }
-
-            Spacer(modifier = Modifier.width(40.dp))
-
-            Text(
-                text = title,
-                color = Color.Green.copy(alpha = 0.9f),
-                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            )
-
-
-        }
-    }, actions = {
-        IconButton(onClick = {
-            FirebaseAuth.getInstance().signOut().run {
-                navController.navigate(AppScreens.LoginScreen.name)
-            }
-        }) {
-            if (showProfile) {
-                Icon(
-                    imageVector = Icons.Filled.Logout, contentDescription = "Logout"
-                )
-            } else {
-                Box() {}
-            }
-        }
-    }, colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = Color.Transparent
-    )
-    )
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FinanceAppBarII(
     title: String,
     icon: ImageVector? = null,
     navController: NavController,
@@ -340,45 +265,7 @@ fun BottomBar(navController: NavController, homeScreen: Boolean = false, stocksS
 
 
 @Composable
-fun FABContent(onTap: () -> Unit) {
-    FloatingActionButton(
-        onClick = { onTap() }, shape = RoundedCornerShape(50.dp), containerColor = Color(0xFF009688)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = "Add Stock",
-            tint = Color(0xFF8BC34A)
-        )
-    }
-}
-
-
-@Composable
 fun RoundedButton(
-    label: String = "More", radius: Int = 29, onPressDetails: () -> Unit = {}
-) {
-    Surface(
-        modifier = Modifier.clip(
-            RoundedCornerShape(
-                topStartPercent = radius, topEndPercent = radius
-            )
-        ), color = Color(0xFF009688)
-    ) {
-        Column(
-            modifier = Modifier
-                .width(90.dp)
-                .heightIn(40.dp)
-                .clickable { onPressDetails.invoke() },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = label, style = TextStyle(color = Color.White, fontSize = 15.sp))
-        }
-    }
-}
-
-@Composable
-fun RoundedButtonI(
     label: String = "More",
     radius: Dp = 24.dp,
     modifier: Modifier = Modifier,

@@ -43,7 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBarII
+import com.example.financeapptestversion.components.FinanceAppBar
 import com.example.financeapptestversion.components.TitleSection
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
@@ -60,7 +60,7 @@ fun FinanceStocksScreen(
 ) {
 
     Scaffold(topBar = {
-        FinanceAppBarII(
+        FinanceAppBar(
             title = "Cashly",
             navController = navController,
             icon = Icons.Default.ArrowBack,

@@ -21,20 +21,38 @@ class LoginScreenViewModel : ViewModel() {
     val loading: LiveData<Boolean> = _loading
 
 
-    fun createUserWithEmailAndPassword(email: String, password: String, home: () -> Unit) {
-        if (_loading.value == false) {
-            _loading.value = true
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
+    fun createUserWithEmailAndPassword(
+        email: String,
+        password: String,
+        home: () -> Unit,
+        tryAgain: () -> Unit
+    ) {
+
+        val emailRegex =
+            Regex("""\b([a-z0-9_.]+)@(\w+\.)+(\w{2,4})(\.\w{2})?\b""", RegexOption.IGNORE_CASE)
+        val validEmail = emailRegex.matches(email)
+
+        val passwordRegex = Regex("""^.{8,}$""")
+        val validPassword = passwordRegex.matches(password)
+
+        if (!validEmail || !validPassword) {
+            tryAgain()
+            return
+        } else {
+            if (_loading.value == false) {
+                _loading.value = true
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val displayName = task.result?.user?.email?.split('@')?.get(0)
                         createUser(displayName)
                         home()
                     } else {
-                        Log.d("FB", "createUserWithEmailAndPassword: ${task.result.toString()}")
+                        tryAgain()
+                        Log.d("FB", "createUserWithEmailAndPassword: ${task.exception}")
                     }
                     _loading.value = false
                 }
+            }
         }
     }
 
@@ -55,25 +73,33 @@ class LoginScreenViewModel : ViewModel() {
     }
 
 
+    fun signInWithEmailAndPassword(
+        email: String,
+        password: String,
+        home: () -> Unit,
+        tryAgain: () -> Unit
+    ) {
+        val emailRegex =
+            Regex("""\b([a-z0-9_.]+)@(\w+\.)+(\w{2,4})(\.\w{2})?\b""", RegexOption.IGNORE_CASE)
+        val validEmail = emailRegex.matches(email)
 
-    fun signInWithEmailAndPassword(email: String, password: String, home: () -> Unit) =
-        viewModelScope.launch {
-            try {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d(
-                                "FB",
-                                "createUserWithEmailAndPassword: Fuck yea ${task.result.toString()}"
-                            )
-                            home()
-                        } else {
-                            Log.d("FB", "createUserWithEmailAndPassword: ${task.result}")
-                        }
-                    }
-            } catch (ex: Exception) {
-                Log.d("FB", "createUserWithEmailAndPassword: ${ex.message}")
+        if (!validEmail) {
+            tryAgain()
+            return
+        } else {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(
+                        "FB",
+                        "createUserWithEmailAndPassword: Fuck yea ${task.result}"
+                    )
+                    home()
+                } else {
+                    tryAgain()
+                    Log.d("FB", "createUserWithEmailAndPassword: ${task.exception}")
+                }
             }
         }
+    }
 
 }

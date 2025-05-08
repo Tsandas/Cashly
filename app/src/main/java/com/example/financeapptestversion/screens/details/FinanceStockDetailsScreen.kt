@@ -43,8 +43,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.BottomBar
-import com.example.financeapptestversion.components.FinanceAppBarII
-import com.example.financeapptestversion.components.RoundedButtonI
+import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.components.RoundedButton
 import com.example.financeapptestversion.model.MStockItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -66,7 +66,7 @@ fun FinanceStockDetailsScreen(
 
     Scaffold(
         topBar = {
-            FinanceAppBarII(
+            FinanceAppBar(
                 title = "Stock Details",
                 icon = Icons.Default.ArrowBack,
                 navController = navController,
@@ -204,7 +204,7 @@ fun FinanceStockDetailsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                RoundedButtonI(label = "Save") {
+                                RoundedButton(label = "Save") {
                                     if (numberText.isNotEmpty() && quantityText.isNotEmpty()) {
                                         val savedStock = MStockItem(
                                             symbol = stock.symbol,
@@ -218,7 +218,7 @@ fun FinanceStockDetailsScreen(
                                         saveToFirebase(savedStock, navController)
                                     }
                                 }
-                                RoundedButtonI(label = "Cancel") {
+                                RoundedButton(label = "Cancel") {
                                     navController.popBackStack()
                                 }
                             }

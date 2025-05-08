@@ -1,5 +1,6 @@
 package com.example.financeapptestversion.screens.login
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +47,7 @@ import com.example.financeapptestversion.components.FinanceLogo
 import com.example.financeapptestversion.components.PasswordInput
 import com.example.financeapptestversion.R
 import com.example.financeapptestversion.navigation.AppScreens
+import com.example.financeapptestversion.ui.theme.CardBackground
 
 @Composable
 fun FinanceLoginScreen(
@@ -50,11 +58,42 @@ fun FinanceLoginScreen(
         mutableStateOf(true)
     }
 
+    val tryAgainLogin = remember {
+        mutableStateOf(false)
+    }
+    val tryAgainCreate = remember {
+        mutableStateOf(false)
+    }
+
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        color = MaterialTheme.colorScheme.background
     ) {
+
+        if (tryAgainLogin.value) {
+            Toast.makeText(
+                LocalContext.current,
+                "Invalid Email and/or Password!",
+                Toast.LENGTH_SHORT
+            ).show()
+            tryAgainLogin.value = false;
+        }
+        if (tryAgainCreate.value) {
+            Toast.makeText(
+                LocalContext.current,
+                "Provide valid email and password with more than 6 characters!",
+                Toast.LENGTH_SHORT
+            ).show()
+            tryAgainCreate.value = false;
+        }
+
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
@@ -65,15 +104,46 @@ fun FinanceLoginScreen(
             ) {
                 FinanceLogo()
                 if (showLoginForm.value) {
-                    UserForm(loading = false, isCreateAccount = false) { email, password ->
-                        viewModel.signInWithEmailAndPassword(email, password) {
-                            navController.navigate(AppScreens.SplashScreen.name)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground
+                        )
+                    ) {
+                        UserForm(loading = false, isCreateAccount = false) { email, password ->
+                            viewModel.signInWithEmailAndPassword(
+                                email, password, home = {
+                                    navController.navigate(AppScreens.SplashScreen.name)
+                                },
+                                tryAgain = {
+                                    tryAgainLogin.value = true
+                                })
                         }
                     }
                 } else {
-                    UserForm(loading = false, isCreateAccount = true) { email, password ->
-                        viewModel.createUserWithEmailAndPassword(email, password) {
-                            navController.navigate(AppScreens.SplashScreen.name)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground
+                        )
+                    ) {
+                        UserForm(loading = false, isCreateAccount = true) { email, password ->
+                            viewModel.createUserWithEmailAndPassword(
+                                email, password,
+                                home = {
+                                    navController.navigate(AppScreens.SplashScreen.name)
+                                },
+                                tryAgain = {
+                                    tryAgainCreate.value = true
+                                })
                         }
                     }
                 }
@@ -101,6 +171,8 @@ fun FinanceLoginScreen(
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
+
+
         }
     }
 }
@@ -121,14 +193,16 @@ fun UserForm(
         email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
     }
     val modifier = Modifier
-        .height(250.dp)
-        .background(MaterialTheme.colorScheme.background)
+        .padding(8.dp)
+        .height(260.dp)
+        .background(CardBackground)
         .verticalScroll(rememberScrollState())
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (isCreateAccount) {
             Text(
                 text = stringResource(id = R.string.create_acc),
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
+                color = Color.Black
             )
         } else {
             Text("")
@@ -171,13 +245,17 @@ fun SubmitButton(textId: String, loading: Boolean, validInputs: Boolean, onClick
     Button(
         onClick = onClick,
         modifier = Modifier
-            .padding(3.dp)
+            .padding(3.dp, top = 10.dp)
             .fillMaxWidth(),
         enabled = !loading && validInputs,
-        shape = CircleShape
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            disabledContainerColor = Color.Gray
+        )
     ) {
         if (loading) CircularProgressIndicator(modifier = Modifier.size(25.dp))
-        else Text(text = textId, modifier = Modifier.padding(5.dp))
+        else Text(text = textId, modifier = Modifier.padding(5.dp), color = Color.Black)
     }
 
 }

@@ -39,8 +39,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FinanceApp() {
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
     ) {
         Column(
             verticalArrangement = Arrangement.Center,

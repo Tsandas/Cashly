@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.financeapptestversion.components.FinanceLogo
 import com.example.financeapptestversion.model.AccountCashBalance
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
@@ -52,6 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import com.example.financeapptestversion.R
+import com.example.financeapptestversion.components.AppLogo
 
 @Composable
 fun FinanceSplashScreen(
@@ -70,7 +70,7 @@ fun FinanceSplashScreen(
                 easing = { OvershootInterpolator(8f).getInterpolation(it) }
             )
         )
-        delay(1500L)
+        delay(2000L)
 
         val isUserLoggedIn = !FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()
         Log.d("FinanceSplashScreen", "isUserLoggedIn: $isUserLoggedIn")
@@ -199,13 +199,12 @@ fun FinanceSplashScreen(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(10.dp)
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    FinanceLogo() // Your custom logo composable
-                    Spacer(modifier = Modifier.height(20.dp))
+                    AppLogo()
                     Text(
                         text = "\"Track. Budget. Invest.\"",
                         style = MaterialTheme.typography.titleLarge.copy(
@@ -215,10 +214,9 @@ fun FinanceSplashScreen(
                         ),
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Finance App",
-                        style = MaterialTheme.typography.labelSmall.copy(
+                        style = MaterialTheme.typography.labelMedium.copy(
                             color = SoftGray,
                             fontWeight = FontWeight.Medium
                         )

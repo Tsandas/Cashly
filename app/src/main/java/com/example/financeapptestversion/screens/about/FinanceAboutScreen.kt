@@ -46,8 +46,7 @@ fun FinanceAboutScreen(navController: NavController) {
             onIconClicked = {
                 navController.popBackStack()
             })
-    }, bottomBar = { BottomBar(navController) })
-    { paddingValues ->
+    }, bottomBar = { BottomBar(navController) }) { paddingValues ->
 
         Column(
             modifier = Modifier

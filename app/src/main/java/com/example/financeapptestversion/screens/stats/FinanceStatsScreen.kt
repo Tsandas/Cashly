@@ -58,19 +58,15 @@ fun FinanceStatsScreen(
     var stocks: List<MStockItem>
     val currentUser = FirebaseAuth.getInstance().currentUser
     val isLoading = viewModel.data.value.loading == true
-    Scaffold(
-        topBar = {
-            FinanceAppBar(
-                title = "My Stats",
-                navController = navController,
-                icon = Icons.Default.ArrowBack,
-                onIconClicked = {
-                    navController.popBackStack()
-                }
-            )
-        },
-        bottomBar = { BottomBar(navController) }
-    ) {
+    Scaffold(topBar = {
+        FinanceAppBar(
+            title = "My Stats",
+            navController = navController,
+            icon = Icons.Default.ArrowBack,
+            onIconClicked = {
+                navController.popBackStack()
+            })
+    }, bottomBar = { BottomBar(navController) }) {
         Surface(
             modifier = Modifier
                 .padding(it)
@@ -114,7 +110,7 @@ fun FinanceStatsScreen(
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("Available Cash", style = MaterialTheme.typography.labelLarge)
                             Text(
-                                text = "$${viewModel.localAccount.value.balance}",
+                                text = "$${"%.2f".format(viewModel.localAccount.value.balance)}",
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -136,7 +132,7 @@ fun FinanceStatsScreen(
                                     totalInvested += stock.priceBought!! * stock.quantityBought!!
                                 }
                                 Text(
-                                    text = "$$totalInvested",
+                                    text = "$${"%.2f".format(totalInvested)}",
                                     style = MaterialTheme.typography.headlineSmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -218,20 +214,23 @@ fun FinanceStatsScreen(
                                             colors = CardDefaults.cardColors(containerColor = backgroundColor),
                                             elevation = CardDefaults.cardElevation(8.dp),
                                             modifier = Modifier
-                                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                                .padding(
+                                                    horizontal = 12.dp, vertical = 8.dp
+                                                )
                                                 .clickable {
                                                     //onPressDetails.invoke(stock.id.toString())
                                                 }) {
 
                                             Row(
                                                 modifier = Modifier
-                                                    .padding(horizontal = 8.dp, vertical = 10.dp)
-                                                    .fillMaxWidth()
+                                                    .padding(
+                                                        horizontal = 8.dp, vertical = 10.dp
+                                                    )
+                                                    .fillMaxWidth(),
 //                                                    .background(
 //                                                        color = Color(0xFFF2F2F2),
 //                                                        shape = RoundedCornerShape(8.dp)
 //                                                    )
-                                                        ,
                                                 verticalAlignment = Alignment.CenterVertically,
                                             ) {
                                                 Image(
@@ -256,8 +255,7 @@ fun FinanceStatsScreen(
                                                             "%.2f".format(
                                                                 totalProfit
                                                             )
-                                                        }" else
-                                                            "Loss: -$${"%.2f".format(totalProfit * -1)}",
+                                                        }" else "Loss: -$${"%.2f".format(totalProfit * -1)}",
                                                         color = profitColor,
                                                         style = MaterialTheme.typography.bodySmall
                                                     )
@@ -269,8 +267,7 @@ fun FinanceStatsScreen(
                                                     tint = Color.Black,
                                                     modifier = Modifier.clickable {
                                                         navController.navigate(AppScreens.UpdateScreen.name + "/${stock.id}")
-                                                    }
-                                                )
+                                                    })
                                             }
 
                                         }

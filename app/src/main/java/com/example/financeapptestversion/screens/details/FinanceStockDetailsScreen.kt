@@ -64,21 +64,17 @@ fun FinanceStockDetailsScreen(
         stockInfo.value = viewModel.getStockInfo(stockSymbol).data
     }
 
-    Scaffold(
-        topBar = {
-            FinanceAppBar(
-                title = "Stock Details",
-                icon = Icons.Default.ArrowBack,
-                navController = navController,
-                onIconClicked = {
-                    navController.popBackStack()
-                }
-            )
-        },
-        bottomBar = {
-            BottomBar(navController)
-        }
-    ) { innerPadding ->
+    Scaffold(topBar = {
+        FinanceAppBar(
+            title = "Stock Details",
+            icon = Icons.Default.ArrowBack,
+            navController = navController,
+            onIconClicked = {
+                navController.popBackStack()
+            })
+    }, bottomBar = {
+        BottomBar(navController)
+    }) { innerPadding ->
         Surface(
             modifier = Modifier
                 .padding(innerPadding)
@@ -94,8 +90,7 @@ fun FinanceStockDetailsScreen(
             ) {
                 if (stockInfo.value == null) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator()
@@ -106,8 +101,7 @@ fun FinanceStockDetailsScreen(
                 } else {
                     val stock = stockInfo.value!!
                     Column(
-                        modifier = Modifier
-                            .padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
@@ -239,18 +233,14 @@ private fun saveToFirebase(savedStock: MStockItem, navController: NavController)
     val dbCollection = db.collection("stocks")
 
     if (savedStock.toString().isNotEmpty()) {
-        dbCollection.add(savedStock)
-            .addOnSuccessListener { documentReference ->
+        dbCollection.add(savedStock).addOnSuccessListener { documentReference ->
                 val docId = documentReference.id
-                dbCollection.document(docId)
-                    .update("id", docId)
-                    .addOnCompleteListener { task ->
+                dbCollection.document(docId).update("id", docId).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             navController.popBackStack()
                         }
                     }
-            }
-            .addOnFailureListener { e ->
+            }.addOnFailureListener { e ->
                 Log.w("TAG", "Error writing document", e)
             }
 

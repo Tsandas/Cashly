@@ -2,21 +2,11 @@ package com.example.financeapptestversion.navigation
 
 enum class AppScreens {
 
-    SplashScreen,
-    LoginScreen,
-    CreateAccountScreen,
-    HomeScreen,
-    SearchScreen,
-    DetailScreen,
-    UpdateScreen,
-    StatsScreen,
-    StocksScreen,
-    AboutScreen;
+    SplashScreen, LoginScreen, CreateAccountScreen, HomeScreen, SearchScreen, DetailScreen, UpdateScreen, StatsScreen, StocksScreen, AboutScreen;
 
     companion object {
-        fun fromRoute(route:String?): AppScreens
-         = when(route?.substringBefore("/")){
-             SplashScreen.name -> SplashScreen
+        fun fromRoute(route: String?): AppScreens = when (route?.substringBefore("/")) {
+            SplashScreen.name -> SplashScreen
             LoginScreen.name -> LoginScreen
             CreateAccountScreen.name -> CreateAccountScreen
             HomeScreen.name -> HomeScreen

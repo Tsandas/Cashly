@@ -43,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.EmailInput
-import com.example.financeapptestversion.components.FinanceLogo
 import com.example.financeapptestversion.components.PasswordInput
 import com.example.financeapptestversion.R
+import com.example.financeapptestversion.components.AppLogo
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.ui.theme.CardBackground
 
@@ -74,9 +74,7 @@ fun FinanceLoginScreen(
 
         if (tryAgainLogin.value) {
             Toast.makeText(
-                LocalContext.current,
-                "Invalid Email and/or Password!",
-                Toast.LENGTH_SHORT
+                LocalContext.current, "Invalid Email and/or Password!", Toast.LENGTH_SHORT
             ).show()
             tryAgainLogin.value = false;
         }
@@ -102,12 +100,12 @@ fun FinanceLoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                FinanceLogo()
+                AppLogo(modifier = Modifier.size(200.dp))
                 if (showLoginForm.value) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(8.dp),
                         shape = RoundedCornerShape(24.dp),
                         elevation = CardDefaults.cardElevation(8.dp),
                         colors = CardDefaults.cardColors(
@@ -115,20 +113,18 @@ fun FinanceLoginScreen(
                         )
                     ) {
                         UserForm(loading = false, isCreateAccount = false) { email, password ->
-                            viewModel.signInWithEmailAndPassword(
-                                email, password, home = {
-                                    navController.navigate(AppScreens.SplashScreen.name)
-                                },
-                                tryAgain = {
-                                    tryAgainLogin.value = true
-                                })
+                            viewModel.signInWithEmailAndPassword(email, password, home = {
+                                navController.navigate(AppScreens.SplashScreen.name)
+                            }, tryAgain = {
+                                tryAgainLogin.value = true
+                            })
                         }
                     }
                 } else {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(8.dp),
                         shape = RoundedCornerShape(24.dp),
                         elevation = CardDefaults.cardElevation(8.dp),
                         colors = CardDefaults.cardColors(
@@ -136,14 +132,11 @@ fun FinanceLoginScreen(
                         )
                     ) {
                         UserForm(loading = false, isCreateAccount = true) { email, password ->
-                            viewModel.createUserWithEmailAndPassword(
-                                email, password,
-                                home = {
-                                    navController.navigate(AppScreens.SplashScreen.name)
-                                },
-                                tryAgain = {
-                                    tryAgainCreate.value = true
-                                })
+                            viewModel.createUserWithEmailAndPassword(email, password, home = {
+                                navController.navigate(AppScreens.SplashScreen.name)
+                            }, tryAgain = {
+                                tryAgainCreate.value = true
+                            })
                         }
                     }
                 }
@@ -152,7 +145,7 @@ fun FinanceLoginScreen(
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(15.dp, bottom = 30.dp),
+                    .padding(10.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -168,8 +161,7 @@ fun FinanceLoginScreen(
                         }
                         .padding(start = 5.dp),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary
-                )
+                    color = MaterialTheme.colorScheme.secondary)
             }
 
 
@@ -208,9 +200,7 @@ fun UserForm(
             Text("")
         }
         EmailInput(
-            emailState = email,
-            enabled = !loading,
-            onAction = KeyboardActions {
+            emailState = email, enabled = !loading, onAction = KeyboardActions {
                 passwordFocusRequest.requestFocus()
             })
         PasswordInput(
@@ -222,8 +212,7 @@ fun UserForm(
             onAction = KeyboardActions {
                 if (!valid) return@KeyboardActions
                 onDone(email.value.trim(), password.value.trim())
-            }
-        )
+            })
 
 
         SubmitButton(
@@ -250,8 +239,7 @@ fun SubmitButton(textId: String, loading: Boolean, validInputs: Boolean, onClick
         enabled = !loading && validInputs,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            disabledContainerColor = Color.Gray
+            containerColor = MaterialTheme.colorScheme.primary, disabledContainerColor = Color.Gray
         )
     ) {
         if (loading) CircularProgressIndicator(modifier = Modifier.size(25.dp))

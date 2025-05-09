@@ -11,7 +11,6 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 
-
 // Light Theme
 val GreenPrimary = Color(0xFF00C853)
 val GreenSecondary = Color(0xFF64DD17)
@@ -19,7 +18,7 @@ val BackgroundLight = Color(0xFFF9F9F9)
 val SurfaceLight = Color(0xFFFFFFFF)
 val TextPrimaryLight = Color(0xFF1B1B1B)
 
-val ProfitGreenLightBackground =  Color(0xFFDDEFDE)
+val ProfitGreenLightBackground = Color(0xFFDDEFDE)
 val LossRedLightBackground = Color(0xFFFFE0E4)
 
 // Dark Theme

@@ -33,30 +33,25 @@ fun syncDataToFireBase(
 
     val accountCollection = db.collection("accounts")
 
-    if(account.firebaseUserId.isEmpty()) {
+    if (account.firebaseUserId.isEmpty()) {
         account.firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString()
     }
 
-    accountCollection.document(account.firebaseUserId)
-        .set(account)
+    accountCollection.document(account.firebaseUserId).set(account)
         .addOnSuccessListener { Log.d("FirebaseSync", "Account synced") }
-        .addOnFailureListener {Log.e("FirebaseSync", "Failed to sync account", it) }
+        .addOnFailureListener { Log.e("FirebaseSync", "Failed to sync account", it) }
 
     val transactionCollection = db.collection("transactions")
 
 
-    transactionCollection
-        .whereEqualTo("firebaseUserId", account.firebaseUserId)
-        .get()
+    transactionCollection.whereEqualTo("firebaseUserId", account.firebaseUserId).get()
         .addOnSuccessListener { snapshot ->
             val currentTransactionIds = transactions.map { it.id.toString() }.toSet()
             for (doc in snapshot.documents) {
                 if (!currentTransactionIds.contains(doc.id)) {
-                    doc.reference.delete()
-                        .addOnSuccessListener {
+                    doc.reference.delete().addOnSuccessListener {
                             Log.d("FirebaseSync", "Deleted old transaction ${doc.id}")
-                        }
-                        .addOnFailureListener {
+                        }.addOnFailureListener {
                             Log.e("FirebaseSync", "Failed to delete transaction ${doc.id}", it)
                         }
                 }
@@ -65,15 +60,11 @@ fun syncDataToFireBase(
 
 
     transactions.forEach { transaction ->
-        transactionCollection
-            .document(transaction.id.toString())
-            .set(transaction)
+        transactionCollection.document(transaction.id.toString()).set(transaction)
             .addOnSuccessListener { Log.d("FirebaseSync", "Transaction ${transaction.id} synced") }
             .addOnFailureListener {
                 Log.e(
-                    "FirebaseSync",
-                    "Failed to sync transaction ${transaction.id}",
-                    it
+                    "FirebaseSync", "Failed to sync transaction ${transaction.id}", it
                 )
             }
     }

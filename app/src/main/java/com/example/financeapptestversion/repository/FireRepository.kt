@@ -1,7 +1,6 @@
 package com.example.financeapptestversion.repository
 
 import android.util.Log
-import com.example.financeapptestversion.data.AppDatabase
 import com.example.financeapptestversion.data.DataOrException
 import com.example.financeapptestversion.model.AccountCashBalance
 import com.example.financeapptestversion.model.MStockItem
@@ -44,10 +43,8 @@ class FireRepository @Inject constructor(
         try {
             dataOrException.loading = true
             dataOrException.data = queryTransactions.whereEqualTo(
-                "firebaseUserId",
-                FirebaseAuth.getInstance().currentUser?.uid
-            )
-                .get().await().documents.map { documentSnapshot ->
+                "firebaseUserId", FirebaseAuth.getInstance().currentUser?.uid
+            ).get().await().documents.map { documentSnapshot ->
                     documentSnapshot.toObject(Transaction::class.java)!!
                 }
             if (!dataOrException.data.isNullOrEmpty()) {
@@ -65,10 +62,10 @@ class FireRepository @Inject constructor(
 
         try {
             dataOrException.loading = true
-            val snapshot = queryAccounts
-                .whereEqualTo("firebaseUserId", FirebaseAuth.getInstance().currentUser?.uid)
-                .get()
-                .await()
+            val snapshot = queryAccounts.whereEqualTo(
+                    "firebaseUserId",
+                    FirebaseAuth.getInstance().currentUser?.uid
+                ).get().await()
 
             if (!snapshot.isEmpty) {
                 val document = snapshot.documents.first()

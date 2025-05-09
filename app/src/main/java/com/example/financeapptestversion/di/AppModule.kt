@@ -45,35 +45,22 @@ object AppModule {
     fun provideStockApi(): StocksApi {
         return Retrofit.Builder().baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(
-                okhttp3.OkHttpClient.Builder()
-                    .addInterceptor { chain ->
-                        val original = chain.request()
-                        val request = original.newBuilder()
-                            .url(
-                                original.url.newBuilder()
-                                    .addQueryParameter("apikey", Constants.API_KEY)
-                                    .build()
-                            )
-                            .build()
-                        chain.proceed(request)
-                    }
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .build()
-            )
-            .build()
-            .create(StocksApi::class.java)
+            .client(okhttp3.OkHttpClient.Builder().addInterceptor { chain ->
+                    val original = chain.request()
+                    val request = original.newBuilder().url(
+                            original.url.newBuilder().addQueryParameter("apikey", Constants.API_KEY)
+                                .build()
+                        ).build()
+                    chain.proceed(request)
+                }.readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS).build()).build().create(StocksApi::class.java)
     }
 
     @Singleton
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "finance_app_db"
+            context, AppDatabase::class.java, "finance_app_db"
         ).fallbackToDestructiveMigration().build()
 
 

@@ -12,7 +12,7 @@ class StockRepository @Inject constructor(private val api: StocksApi) {
         try {
             dataOrException.loading = true
             dataOrException.data = api.getStocks(symbol/*, API_KEY*/).get(0)
-            if (dataOrException.data.toString().isNotEmpty()){
+            if (dataOrException.data.toString().isNotEmpty()) {
                 dataOrException.loading = false
                 Log.d("StockRepository", "API REQUEST SUCCESSFUL ${dataOrException.data}")
             }

@@ -57,13 +57,18 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
     }
 
     fun addTransaction(transaction: Transaction) {
-        var amount =  if (transaction.isExpense) -transaction.amount else transaction.amount
+        var amount = if (transaction.isExpense) -transaction.amount else transaction.amount
         var newBalance = _accountCashBalance.value!!.balance + amount
         transaction.firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString()
         Log.d("Cash", "addTransaction: $transaction")
         viewModelScope.launch { repository.addTransaction(transaction) }
         _accountCashBalance.value = AccountCashBalance(id = 0, balance = newBalance)
         viewModelScope.launch { repository.updateCashBalance(newBalance) }
+    }
+
+    fun addTransactionUpdate(transaction: Transaction) {
+        transaction.firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        viewModelScope.launch { repository.addTransaction(transaction) }
     }
 
     fun deleteAllTransaction() = viewModelScope.launch { repository.deleteAllTransactions() }
@@ -82,7 +87,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: AccountTra
     fun resetCashBalance() = viewModelScope.launch { repository.resetCashBalance() }
 
 
-    fun clearData(){
+    fun clearData() {
         resetCashBalance()
         deleteAllTransaction()
     }

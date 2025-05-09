@@ -71,9 +71,7 @@ class FinanceStatsScreenViewModel @Inject constructor(
                 }
             }
             stocksState.value = DataOrException(
-                data = updatedStocks,
-                loading = false,
-                e = localStocks.e
+                data = updatedStocks, loading = false, e = localStocks.e
             )
             Log.d(
                 "StockScreenViewModel",

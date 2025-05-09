@@ -68,7 +68,6 @@ import com.example.financeapptestversion.components.TransactionItem
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.screens.update.ShowAlertDialog
-import com.example.financeapptestversion.ui.theme.GreenPrimary
 import com.example.financeapptestversion.ui.theme.WarningRed
 import com.example.financeapptestversion.utils.syncDataToFireBase
 import com.google.firebase.auth.FirebaseAuth
@@ -455,7 +454,7 @@ fun UpdateTransaction(
                 ).show()
             } else {
                 viewModel.removeTransaction(transaction)
-                viewModel.addTransaction(
+                viewModel.addTransactionUpdate(
                     Transaction(
                         title = transactionName.value,
                         amount = transactionAmount.value,

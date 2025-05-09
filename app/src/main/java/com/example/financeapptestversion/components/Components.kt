@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +38,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -61,30 +58,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.financeapptestversion.R
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import java.text.SimpleDateFormat
 import java.util.Locale
-import com.example.financeapptestversion.R
 
 @Composable
-fun AppLogo(){
+fun AppLogo(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.cashly_logo),
+        painter = painterResource(id = R.drawable.cashly_logo_xxl),
         contentDescription = "App Logo",
-        modifier = Modifier
-            .size(64.dp)
-            .padding(8.dp)
-    )
-}
-
-@Composable
-fun FinanceLogo(modifier: Modifier = Modifier) {
-    Text(
-        text = "Cashly",
-        style = MaterialTheme.typography.displayLarge,
-        modifier = modifier.padding(bottom = 16.dp),
-        color = Color.Green.copy(alpha = 0.5f)
+        modifier = modifier
     )
 }
 
@@ -211,49 +196,42 @@ fun FinanceAppBar(
 ) {
     TopAppBar(
         title = {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold
-                    )
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(
+                text = title, style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold
+                )
+            )
+        }
+    }, navigationIcon = {
+        if (icon != null) {
+            IconButton(onClick = { onIconClicked() }) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
-        },
-        navigationIcon = {
-            if (icon != null) {
-                IconButton(onClick = { onIconClicked() }) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+        }
+    }, actions = {
+        if (infoIconAction != null) {
+            IconButton(onClick = infoIconAction) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Info",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
-        },
-        actions = {
-            if (infoIconAction != null) {
-                IconButton(onClick = infoIconAction) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "Info",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        )
+        }
+    }, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary
+    )
     )
 }
 
 @Composable
 fun BottomBar(
-    navController: NavController,
-    homeScreen: Boolean = false,
-    stocksScreen: Boolean = false
+    navController: NavController, homeScreen: Boolean = false, stocksScreen: Boolean = false
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary
@@ -268,8 +246,7 @@ fun BottomBar(
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             },
-            label = { Text("Home", color = MaterialTheme.colorScheme.onPrimary) }
-        )
+            label = { Text("Home", color = MaterialTheme.colorScheme.onPrimary) })
         NavigationBarItem(
             selected = stocksScreen,
             onClick = { navController.navigate(AppScreens.StocksScreen.name) },
@@ -280,8 +257,7 @@ fun BottomBar(
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             },
-            label = { Text("Stocks", color = MaterialTheme.colorScheme.onPrimary) }
-        )
+            label = { Text("Stocks", color = MaterialTheme.colorScheme.onPrimary) })
     }
 }
 
@@ -306,8 +282,7 @@ fun RoundedButton(
             .widthIn(min = 100.dp)
     ) {
         Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp)
+            text = label, style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp)
         )
     }
 }
@@ -347,8 +322,7 @@ fun ShowDialogHomeScreen(
             },
             confirmButton = {
                 TextButton(
-                    onClick = { onYesPressed.invoke() },
-                    colors = ButtonDefaults.textButtonColors(
+                    onClick = { onYesPressed.invoke() }, colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
@@ -370,8 +344,7 @@ fun ShowDialogHomeScreen(
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
                     )
                 }
-            }
-        )
+            })
     }
 }
 
@@ -427,14 +400,12 @@ fun TransactionItem(
     onDeleteClicked: (Transaction) -> Unit,
     onCardClicked: (Transaction) -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCardClicked(transaction) }
-            .padding(vertical = 4.dp),
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onCardClicked(transaction) }
+        .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
+        elevation = CardDefaults.cardElevation(2.dp)) {
         Row(
             modifier = Modifier
                 .padding(16.dp)

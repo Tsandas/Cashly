@@ -119,13 +119,12 @@ fun StockList(navController: NavController, viewModel: StockSearchViewModel) {
 fun StockRow(stock: MStockItem?, navController: NavController) {
     val cardColor = if (isSystemInDarkTheme()) Color(0xFF2E7D32) else Color(0xFFC8E6C9)
     val imageBackground = Color(0xFFE0E0E0)
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                navController.navigate(AppScreens.DetailScreen.name + "/${stock?.symbol}")
-            }
-            .padding(vertical = 6.dp),
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+            navController.navigate(AppScreens.DetailScreen.name + "/${stock?.symbol}")
+        }
+        .padding(vertical = 6.dp),
 
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(16.dp),

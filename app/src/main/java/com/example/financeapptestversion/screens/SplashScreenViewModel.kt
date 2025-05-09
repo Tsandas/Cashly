@@ -19,24 +19,19 @@ import javax.inject.Inject
 class SplashScreenViewModel @Inject constructor(
     private val repository: FireRepository,
     private val accountTransactionsRepository: AccountTransactionsRepository
-) :
-    ViewModel() {
+) : ViewModel() {
 
     val accountTransactions: MutableState<DataOrException<List<Transaction>, Boolean, Exception>> =
         mutableStateOf(
             DataOrException(
-                listOf(),
-                true,
-                Exception("")
+                listOf(), true, Exception("")
             )
         )
 
     val cloudAccount: MutableState<DataOrException<AccountCashBalance, Boolean, Exception>> =
         mutableStateOf(
             DataOrException(
-                AccountCashBalance(),
-                true,
-                Exception("")
+                AccountCashBalance(), true, Exception("")
             )
         )
 
@@ -89,7 +84,8 @@ class SplashScreenViewModel @Inject constructor(
 
     fun getLocalAccountCashBalanceII() {
         viewModelScope.launch {
-            localAccountCashBalance.value = accountTransactionsRepository.getAccount().firstOrNull()?.balance ?: 0.0
+            localAccountCashBalance.value =
+                accountTransactionsRepository.getAccount().firstOrNull()?.balance ?: 0.0
         }
     }
 

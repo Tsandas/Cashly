@@ -9,6 +9,7 @@ class DateConverter {
         return date.time
 
     }
+
     @TypeConverter
     fun dateFromTimestamp(timestamp: Long): Date? {
         return Date(timestamp)

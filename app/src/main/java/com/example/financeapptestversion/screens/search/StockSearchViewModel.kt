@@ -24,78 +24,6 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
     // SNAP, AMD, UBER, FDX, ABBV, ETSY, MRNA, LMT, GM, F, RIVN, LCID, CCL, DAL, UAL, AAL, TSM, SONY, ET, NOK, MRO,
     // COIN, RIVN, SIRI, SOFI, RIOT, CPRX, PYPL, TGT, VWO, SPYG
 
-    var availableStocks: List<String> = listOf(
-        "AAPL",
-        "TSLA",
-        "AMZN",
-        "MSFT",
-        "NVDA",
-        "GOOGL",
-        "META",
-        "NFLX",
-        "JPM",
-        "V",
-        "BAC",
-        "AMD",
-        "PYPL",
-        "DIS",
-        "T",
-        "PFE",
-        "COST",
-        "INTC",
-        "KO",
-        "TGT",
-        "NKE",
-        "SPY",
-        "BA",
-        "BABA",
-        "XOM",
-        "WMT",
-        "GE",
-        "CSCO",
-        "VZ",
-        "JNJ",
-        "CVX",
-        "PLTR",
-        "SQ",
-        "SHOP",
-        "SBUX",
-        "SOFI",
-        "HOOD",
-        "RBLX",
-        "SNAP",
-        "AMD",
-        "UBER",
-        "FDX",
-        "ABBV",
-        "ETSY",
-        "MRNA",
-        "LMT",
-        "GM",
-        "F",
-        "RIVN",
-        "LCID",
-        "CCL",
-        "DAL",
-        "UAL",
-        "AAL",
-        "TSM",
-        "SONY",
-        "ET",
-        "NOK",
-        "MRO",
-        "COIN",
-        "RIVN",
-        "SIRI",
-        "SOFI",
-        "RIOT",
-        "CPRX",
-        "PYPL",
-        "TGT",
-        "VWO",
-        "SPYG"
-    )
-
     val stocksInitList: MutableList<MutableState<DataOrException<MStockItem, Boolean, Exception>>> =
         mutableStateListOf()
     var isLoading: Boolean by mutableStateOf(true)
@@ -108,9 +36,7 @@ class StockSearchViewModel @Inject constructor(private val repository: StockRepo
         viewModelScope.launch {
             isLoading = true
             var initStocks = listOf(
-                "AAPL",
-                "TSLA",
-                "NFLX"
+                "AAPL", "TSLA", "NFLX"
             )
             initStocks?.let { list ->
                 for (i in list) {

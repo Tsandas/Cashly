@@ -256,7 +256,7 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                                     cash = 0.0
                                 }
                                 Text(
-                                    text = "$${cash.toString()}",
+                                    text = "$${"%.2f".format(cash)}",
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black

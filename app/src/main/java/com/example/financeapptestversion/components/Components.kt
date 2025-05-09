@@ -2,6 +2,7 @@ package com.example.financeapptestversion.components
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,6 +65,18 @@ import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.example.financeapptestversion.R
+
+@Composable
+fun AppLogo(){
+    Image(
+        painter = painterResource(id = R.drawable.cashly_logo),
+        contentDescription = "App Logo",
+        modifier = Modifier
+            .size(64.dp)
+            .padding(8.dp)
+    )
+}
 
 @Composable
 fun FinanceLogo(modifier: Modifier = Modifier) {
@@ -218,7 +233,7 @@ fun FinanceAppBar(
             }
         },
         actions = {
-            if(infoIconAction != null){
+            if (infoIconAction != null) {
                 IconButton(onClick = infoIconAction) {
                     Icon(
                         imageVector = Icons.Default.Info,
@@ -235,7 +250,11 @@ fun FinanceAppBar(
 }
 
 @Composable
-fun BottomBar(navController: NavController, homeScreen: Boolean = false, stocksScreen: Boolean = false) {
+fun BottomBar(
+    navController: NavController,
+    homeScreen: Boolean = false,
+    stocksScreen: Boolean = false
+) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary
     ) {

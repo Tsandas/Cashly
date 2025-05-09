@@ -285,7 +285,7 @@ fun ListCard(
                 color = titleColor
             )
             Text(
-                text = "Current price: $${stock.price}",
+                text = "Current price: $${"%.2f".format(stock.price)}",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.Black
             )

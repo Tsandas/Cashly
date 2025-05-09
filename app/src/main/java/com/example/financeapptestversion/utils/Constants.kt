@@ -4,7 +4,7 @@ package com.example.financeapptestversion.utils
 object Constants {
     //const val BASE_URL = "https://financialmodelingprep.com/stable/search-exchange-variants?symbol=AAPL&apikey=aXpQmSuXjrMAQ2LBBkACgRJ6xAX4EXYZ"
     const val BASE_URL = "https://financialmodelingprep.com/stable/"
-    const val API_KEY = "mJhrBQ3WoR54FyW2j024BYDC8tZ1SACy"
+    const val API_KEY = "aXpQmSuXjrMAQ2LBBkACgRJ6xAX4EXYZ"
     //old api key aXpQmSuXjrMAQ2LBBkACgRJ6xAX4EXYZ
     //new  wGb9Vs9EFEW8I6JrDkWOJS5Tbhu6Yv2q
     //newer mJhrBQ3WoR54FyW2j024BYDC8tZ1SACy

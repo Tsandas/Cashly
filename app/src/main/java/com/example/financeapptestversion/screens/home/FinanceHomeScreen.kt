@@ -399,32 +399,29 @@ fun UpdateTransaction(
                         .background(Color(0xFFECECEC))
                         .padding(4.dp)
                 ) {
-                    val toggleModifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(50))
-                        .clickable { transactionIsExpense.value = false }
-                        .padding(vertical = 8.dp)
-
-                    val activeColor = GreenPrimary
                     Text(
                         "Income",
-                        modifier = toggleModifier
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { transactionIsExpense.value = false }
+                            .clip(RoundedCornerShape(50))
                             .background(
-                                if (!transactionIsExpense.value) activeColor else Color.Transparent
+                                if (!transactionIsExpense.value) MaterialTheme.colorScheme.primary else Color.Transparent
                             )
-                            .padding(horizontal = 8.dp),
+                            .padding(8.dp),
                         color = if (!transactionIsExpense.value) Color.White else Color.Black,
-                        textAlign = TextAlign.Center
-                    )
+                        textAlign = TextAlign.Center)
 
                     Text(
                         "Expense",
-                        modifier = toggleModifier
+                        modifier = Modifier
+                            .weight(1f)
                             .clickable { transactionIsExpense.value = true }
+                            .clip(RoundedCornerShape(50))
                             .background(
                                 if (transactionIsExpense.value) WarningRed else Color.Transparent
                             )
-                            .padding(horizontal = 8.dp),
+                            .padding(8.dp),
                         color = if (transactionIsExpense.value) Color.White else Color.Black,
                         textAlign = TextAlign.Center)
                 }

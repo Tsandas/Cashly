@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -351,68 +354,114 @@ fun ShowDialogHomeScreen(
             }
         )
     }
-
-
-//    if (openDialog.value) {
-//        AlertDialog(
-//            onDismissRequest = { openDialog.value = false },
-//            title = { Text(text = title) },
-//            text = { content() },
-//            confirmButton = {
-//                TextButton(onClick = { onYesPressed.invoke() }) {
-//                    Text(text = "Yes")
-//                }
-//            },
-//            dismissButton = {
-//                TextButton(onClick = { openDialog.value = false }) {
-//                    Text(text = "No")
-//                }
-//            })
-//    }
 }
 
+//
+//@Composable
+//fun TransactionItems(transaction: Transaction, onDeleteClicked: (Transaction) -> Unit, onCardClicked: (Transaction) -> Unit) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable {
+//                onCardClicked(transaction)
+//            }
+//            .padding(vertical = 4.dp),
+//        colors = CardDefaults.cardColors(containerColor = Color.White),
+//        elevation = CardDefaults.cardElevation(2.dp)) {
+//        Row(
+//            modifier = Modifier
+//                .padding(16.dp)
+//                .fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            val formatter = SimpleDateFormat("dd MMM HH:mm", Locale.getDefault())
+//            val formattedDate = formatter.format(transaction.entryDate)
+//            Column {
+//                Text(transaction.title, fontWeight = FontWeight.Bold, color = Color.Black)
+//                Text(
+//                    text = formattedDate,
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = Color.Black
+//                )
+//            }
+//            Text(
+//                text = "$${transaction.amount}",
+//                fontWeight = FontWeight.Bold,
+//                color = if (transaction.isExpense) Color(0xFFF44336) else Color(0xFF4CAF50)
+//            )
+//            Icon(
+//                modifier = Modifier.clickable {
+//                    onDeleteClicked(transaction)
+//                },
+//                imageVector = Icons.Default.Delete,
+//                contentDescription = "Delete Icon",
+//                tint = Color.Gray
+//            )
+//        }
+//    }
+//}
 
 @Composable
-fun TransactionItem(transaction: Transaction, onDeleteClicked: (Transaction) -> Unit, onCardClicked: (Transaction) -> Unit) {
+fun TransactionItem(
+    transaction: Transaction,
+    onDeleteClicked: (Transaction) -> Unit,
+    onCardClicked: (Transaction) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                onCardClicked(transaction)
-            }
+            .clickable { onCardClicked(transaction) }
             .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(2.dp)) {
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
         Row(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             val formatter = SimpleDateFormat("dd MMM HH:mm", Locale.getDefault())
             val formattedDate = formatter.format(transaction.entryDate)
-            Column {
-                Text(transaction.title, fontWeight = FontWeight.Bold, color = Color.Black)
+
+            Column(
+                modifier = Modifier.weight(1f) // allows space for the right section
+            ) {
+                Text(
+                    text = transaction.title,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Text(
                     text = formattedDate,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black
                 )
             }
-            Text(
-                text = "$${transaction.amount}",
-                fontWeight = FontWeight.Bold,
-                color = if (transaction.isExpense) Color(0xFFF44336) else Color(0xFF4CAF50)
-            )
-            Icon(
-                modifier = Modifier.clickable {
-                    onDeleteClicked(transaction)
-                },
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete Icon",
-                tint = Color.Gray
-            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$${transaction.amount}",
+                    fontWeight = FontWeight.Bold,
+                    color = if (transaction.isExpense) Color(0xFFF44336) else Color(0xFF4CAF50)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Icon(
+                    modifier = Modifier.clickable {
+                        onDeleteClicked(transaction)
+                    },
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Icon",
+                    tint = Color.Gray
+                )
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -118,7 +123,7 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
         TitleSection(label = "Portfolio Stats")
         PortfolioSummaryCard(totalInvested, totalValue, totalProfit)
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
@@ -126,7 +131,7 @@ fun StockScreenMainContent(navController: NavController, viewModel: StockScreenV
             TitleSection(label = "My Stocks")
             Spacer(modifier = Modifier.fillMaxWidth(1f))
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(10.dp))
 
         if (viewModel.stocksState.value.loading == true) {
             CircularProgressIndicator()
@@ -185,19 +190,40 @@ fun HorizontalScrollableComponent(
     listOfStocks: List<MStockItem>, onCardPressed: (String) -> Unit
 ) {
     val scrollState = rememberScrollState()
-    LazyRow(
-        Modifier.fillMaxWidth()
+//    LazyRow(
+//        Modifier.fillMaxWidth()
+//    ) {
+//        items(
+//            count = listOfStocks.count(), itemContent = { index ->
+//                val stock = listOfStocks[index]
+//
+//                ListCard(stock = stock) {
+//                    onCardPressed(stock.id.toString())
+//                }
+//
+//            })
+//    }
+
+
+    LazyHorizontalGrid(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(440.dp),
+        rows = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(
             count = listOfStocks.count(), itemContent = { index ->
                 val stock = listOfStocks[index]
-
                 ListCard(stock = stock) {
                     onCardPressed(stock.id.toString())
                 }
-
             })
     }
+
+
 }
 
 @Composable

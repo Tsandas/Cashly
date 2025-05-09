@@ -65,56 +65,38 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     //dagger-hilt
-
     // note that Hilt Viewmodel is now part of the main Hilt package,
-
     // so trying to import it with its own line causes errors
-
     implementation(libs.hilt.android)
 
     implementation(libs.hilt.android.gradle.plugin)
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    //material icons - use with caution!
-
     implementation(libs.androidx.material.icons.extended)
 
     // Coroutines
-
     implementation(libs.kotlinx.coroutines.core)
-
     implementation(libs.kotlinx.coroutines.android)
-
     implementation(libs.kotlinx.coroutines.play.services)
-
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     //Coil
     implementation(libs.coil.compose)
-
     // Retrofit
     implementation(libs.retrofit)
-
     //OkHttp
-
     implementation(libs.okhttp) // 5.0.0-alpha.2 in course
-
     //gson
-
     implementation(libs.gson)
 
     implementation libs.google.firebase.auth // Firebase Auth dependency
     implementation platform(libs.firebase.bom.v3100)
-
     implementation libs.androidx.lifecycle.livedata.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx.v262
-
     implementation libs.converter.gson
     implementation libs.retrofit.v290
-
     implementation libs.okhttp
-
     implementation (libs.kotlinx.serialization.json.jvm)
 
     implementation 'com.squareup.retrofit2:retrofit:2.10.0'

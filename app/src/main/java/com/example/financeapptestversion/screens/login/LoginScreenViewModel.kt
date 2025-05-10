@@ -4,13 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.financeapptestversion.model.MUser
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
 
 class LoginScreenViewModel : ViewModel() {
 
@@ -48,7 +46,7 @@ class LoginScreenViewModel : ViewModel() {
                         home()
                     } else {
                         tryAgain()
-                        Log.d("FB", "createUserWithEmailAndPassword: ${task.exception}")
+                        Log.d("LoginScreenViewModel", "createUserWithEmailAndPassword: ${task.exception}")
                     }
                     _loading.value = false
                 }
@@ -69,20 +67,18 @@ class LoginScreenViewModel : ViewModel() {
         user["user_id"] = userId.toString()
         user["display_name"] = displayName.toString()
         FirebaseFirestore.getInstance().collection("users").add(user)
-
     }
 
 
     fun signInWithEmailAndPassword(
         email: String,
         password: String,
-        home: () -> Unit,
+        success: () -> Unit,
         tryAgain: () -> Unit
     ) {
         val emailRegex =
             Regex("""\b([a-z0-9_.]+)@(\w+\.)+(\w{2,4})(\.\w{2})?\b""", RegexOption.IGNORE_CASE)
         val validEmail = emailRegex.matches(email)
-
         if (!validEmail) {
             tryAgain()
             return
@@ -90,13 +86,13 @@ class LoginScreenViewModel : ViewModel() {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d(
-                        "FB",
-                        "createUserWithEmailAndPassword: Fuck yea ${task.result}"
+                        "LoginScreenViewModel",
+                        "Successfully logged in: ${task.result}"
                     )
-                    home()
+                    success()
                 } else {
                     tryAgain()
-                    Log.d("FB", "createUserWithEmailAndPassword: ${task.exception}")
+                    Log.d("LoginScreenViewModel", "Sign in with email failed: ${task.exception}")
                 }
             }
         }

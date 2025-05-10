@@ -206,11 +206,10 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                         .padding(16.dp)
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Text(
                             text = "Welcome back, User!",
                             style = MaterialTheme.typography.titleLarge,
@@ -253,14 +252,15 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                             syncData = syncData
                         )
                     }
-                    if(manualSync.value){
-                        if(isConnectedToWifi(context)){
+                    if (manualSync.value) {
+                        if (isConnectedToWifi(context)) {
                             syncData.value = true
                             manualSync.value = false
                             Toast.makeText(context, "Syncing data...", Toast.LENGTH_SHORT).show()
-                        }else{
+                        } else {
                             manualSync.value = false
-                            Toast.makeText(context, "No internet connection!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "No internet connection!", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
 
@@ -270,8 +270,7 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {

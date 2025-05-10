@@ -17,7 +17,7 @@ class StockRepository @Inject constructor(private val api: StocksApi) {
                 Log.d("StockRepository", "API REQUEST SUCCESSFUL ${dataOrException.data}")
             }
         } catch (e: Exception) {
-            Log.e("TAG", "ERROR: ${e.message}")
+            Log.e("StockRepository", "ERROR: ${e.message}")
             dataOrException.e = e
         }
         return dataOrException

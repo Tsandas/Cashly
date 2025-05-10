@@ -113,7 +113,7 @@ fun FinanceLoginScreen(
                         )
                     ) {
                         UserForm(loading = false, isCreateAccount = false) { email, password ->
-                            viewModel.signInWithEmailAndPassword(email, password, home = {
+                            viewModel.signInWithEmailAndPassword(email, password, success = {
                                 navController.navigate(AppScreens.SplashScreen.name)
                             }, tryAgain = {
                                 tryAgainLogin.value = true

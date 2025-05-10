@@ -62,8 +62,8 @@ class LoginScreenViewModel : ViewModel() {
             userId = userId.toString(),
             displayName = displayName.toString(),
             avatarUrl = "",
-            quote = "Life is great",
-            profession = "Android Developer",
+            quote = "",
+            profession = "",
             id = null
         ).toMap()
         user["user_id"] = userId.toString()

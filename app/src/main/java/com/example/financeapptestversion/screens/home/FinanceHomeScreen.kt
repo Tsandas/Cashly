@@ -63,12 +63,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.financeapptestversion.components.BottomBar
 import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.components.RoundedButton
 import com.example.financeapptestversion.components.ShowDialogHomeScreen
 import com.example.financeapptestversion.components.TransactionItem
 import com.example.financeapptestversion.model.Transaction
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.screens.update.ShowAlertDialog
 import com.example.financeapptestversion.ui.theme.WarningRed
+import com.example.financeapptestversion.utils.isConnectedToWifi
 import com.example.financeapptestversion.utils.syncDataToFireBase
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -107,6 +109,10 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
     }
 
     val logout = remember {
+        mutableStateOf(false)
+    }
+
+    val manualSync = remember {
         mutableStateOf(false)
     }
 
@@ -199,11 +205,25 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = "Welcome back, User!",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(
+                            text = "Welcome back, User!",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        RoundedButton(
+                            label = "Sync Data",
+                            radius = 18.dp,
+                        ) {
+                            manualSync.value = true
+                        }
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
 
                     if (openAddTransactionDialog.value) {
@@ -233,6 +253,16 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                             syncData = syncData
                         )
                     }
+                    if(manualSync.value){
+                        if(isConnectedToWifi(context)){
+                            syncData.value = true
+                            manualSync.value = false
+                            Toast.makeText(context, "Syncing data...", Toast.LENGTH_SHORT).show()
+                        }else{
+                            manualSync.value = false
+                            Toast.makeText(context, "No internet connection!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -240,7 +270,10 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Row(
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
@@ -261,11 +294,12 @@ fun Home(navController: NavController, viewModel: HomeScreenViewModel = hiltView
                                     color = Color.Black
                                 )
                             }
-                            Button(
-                                onClick = { openDialog.value = true },
-                                modifier = Modifier.padding(top = 8.dp)
+                            RoundedButton(
+                                label = "Update Balance",
+                                radius = 18.dp,
+                                modifier = Modifier.padding(16.dp)
                             ) {
-                                Text("Update Balance")
+                                openDialog.value = true
                             }
                         }
                     }

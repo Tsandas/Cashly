@@ -46,8 +46,10 @@ import com.example.financeapptestversion.components.EmailInput
 import com.example.financeapptestversion.components.PasswordInput
 import com.example.financeapptestversion.R
 import com.example.financeapptestversion.components.AppLogo
+import com.example.financeapptestversion.components.NoWifi
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.ui.theme.CardBackground
+import com.example.financeapptestversion.utils.isConnectedToWifi
 
 @Composable
 fun FinanceLoginScreen(
@@ -57,13 +59,13 @@ fun FinanceLoginScreen(
     val showLoginForm = rememberSaveable {
         mutableStateOf(true)
     }
-
     val tryAgainLogin = remember {
         mutableStateOf(false)
     }
     val tryAgainCreate = remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier
@@ -73,17 +75,29 @@ fun FinanceLoginScreen(
     ) {
 
         if (tryAgainLogin.value) {
-            Toast.makeText(
-                LocalContext.current, "Invalid Email and/or Password!", Toast.LENGTH_SHORT
-            ).show()
+            if (!isConnectedToWifi(context)) {
+                Toast.makeText(
+                    LocalContext.current, "No internet connection!", Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    LocalContext.current, "Invalid Email and/or Password!", Toast.LENGTH_SHORT
+                ).show()
+            }
             tryAgainLogin.value = false;
         }
         if (tryAgainCreate.value) {
-            Toast.makeText(
-                LocalContext.current,
-                "Provide valid email and password with more than 6 characters!",
-                Toast.LENGTH_SHORT
-            ).show()
+            if (isConnectedToWifi(context)) {
+                Toast.makeText(
+                    LocalContext.current, "No internet connection!", Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    LocalContext.current,
+                    "Provide valid email and password with more than 6 characters!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
             tryAgainCreate.value = false;
         }
 

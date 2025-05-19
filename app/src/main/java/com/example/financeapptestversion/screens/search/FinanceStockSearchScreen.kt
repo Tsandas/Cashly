@@ -40,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,15 +49,18 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.BottomBar
 import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.components.NoWifi
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.utils.Constants.AVAILABLE_SYMBOLS
+import com.example.financeapptestversion.utils.isConnectedToWifi
 
 
 @Composable
 fun FinanceSearchScreen(
     navController: NavController, viewModel: StockSearchViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     Scaffold(topBar = {
         FinanceAppBar(
             title = "Search for stocks",
@@ -69,25 +73,30 @@ fun FinanceSearchScreen(
     }, bottomBar = {
         BottomBar(navController)
     }) {
-        Surface(modifier = Modifier.padding(it)) {
-            Column() {
-                SearchForm(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    loading = false,
-                    viewModel = viewModel,
-                    hint = "Search"
-                ) { symbol ->
-                    if (AVAILABLE_SYMBOLS.contains(symbol.uppercase())) {
-                        viewModel.searchStockII(symbol)
-                        true
-                    } else {
-                        false
+
+        if (!isConnectedToWifi(context)) {
+            NoWifi()
+        } else {
+            Surface(modifier = Modifier.padding(it)) {
+                Column() {
+                    SearchForm(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        loading = false,
+                        viewModel = viewModel,
+                        hint = "Search"
+                    ) { symbol ->
+                        if (AVAILABLE_SYMBOLS.contains(symbol.uppercase())) {
+                            viewModel.searchStockII(symbol)
+                            true
+                        } else {
+                            false
+                        }
                     }
+                    Spacer(modifier = Modifier.height(13.dp))
+                    StockList(navController, viewModel)
                 }
-                Spacer(modifier = Modifier.height(13.dp))
-                StockList(navController, viewModel)
             }
         }
     }
@@ -119,12 +128,13 @@ fun StockList(navController: NavController, viewModel: StockSearchViewModel) {
 fun StockRow(stock: MStockItem?, navController: NavController) {
     val cardColor = if (isSystemInDarkTheme()) Color(0xFF2E7D32) else Color(0xFFC8E6C9)
     val imageBackground = Color(0xFFE0E0E0)
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            navController.navigate(AppScreens.DetailScreen.name + "/${stock?.symbol}")
-        }
-        .padding(vertical = 6.dp),
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate(AppScreens.DetailScreen.name + "/${stock?.symbol}")
+            }
+            .padding(vertical = 6.dp),
 
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(16.dp),

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -46,11 +48,13 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.financeapptestversion.components.BottomBar
 import com.example.financeapptestversion.components.FinanceAppBar
+import com.example.financeapptestversion.components.NoWifi
 import com.example.financeapptestversion.components.TitleSection
 import com.example.financeapptestversion.model.MStockItem
 import com.example.financeapptestversion.navigation.AppScreens
 import com.example.financeapptestversion.ui.theme.LossRedLightBackground
 import com.example.financeapptestversion.ui.theme.ProfitGreenLightBackground
+import com.example.financeapptestversion.utils.isConnectedToWifi
 import com.example.financeapptestversion.utils.toAbbreviated
 import com.google.firebase.auth.FirebaseAuth
 
@@ -60,7 +64,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun FinanceStocksScreen(
     navController: NavController, viewModel: StockScreenViewModel = hiltViewModel()
 ) {
-
+    val context = LocalContext.current
     Scaffold(topBar = {
         FinanceAppBar(
             title = "Cashly",
@@ -89,7 +93,11 @@ fun FinanceStocksScreen(
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            StockScreenMainContent(navController, viewModel)
+            if (isConnectedToWifi(context)) {
+                StockScreenMainContent(navController, viewModel)
+            }else{
+                NoWifi()
+            }
         }
     }
 }
